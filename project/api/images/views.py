@@ -6,15 +6,20 @@ from flask import Blueprint
 from flask import jsonify
 from flask import request
 
+from project.api.images.image_capture import ImageCapture
+
 import json
 
 image_blueprint = Blueprint('image', __name__)
 CORS(image_blueprint)
 
-@image_blueprint.route('/api/submit_image', methods=['GET'])
+@image_blueprint.route('/api/take_photo', methods=['GET'])
 def take_photo():
+    image_capture = ImageCapture()
     
-    return jsonify({
-        'response': 'Image found!',
-        'filename' : file.filename
-    }), 200
+    # if(not image_capture.trigger_image_capture()):
+    #     return jsonify({
+    #         'response': 'Photo was not taken',
+    #     }), 503
+    
+    return image_capture.send_image()

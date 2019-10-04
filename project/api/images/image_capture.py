@@ -5,6 +5,8 @@ import time
 import io
 import os
 
+from flask import jsonify
+
 class ImageCapture:
     def trigger_image_capture(self):
         # Open a file to replace the previous picture
@@ -19,9 +21,9 @@ class ImageCapture:
 
     def send_image(self):
         image_file = open('./project/api/images/assets/photo.jpg', 'rb')
-        response = requests.post(url = 'http://localhost:5000/api/send_image', files = image_file)
+        response = requests.post('http://localhost:5003/api/submit_image', files = {'file': image_file})
         if (response.status_code != 200):
-            return response
+            return jsonify(response.json()), response.status_code
         os.remove('./project/api/images/assets/photo.jpg')
         return jsonify({
             'response': 'Photo successfully sent',

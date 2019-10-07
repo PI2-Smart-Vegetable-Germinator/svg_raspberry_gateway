@@ -21,7 +21,7 @@ class ImageCapture:
 
     def send_image(self):
         image_file = open('./project/api/images/assets/photo.jpg', 'rb')
-        response = requests.post('%s/api/submit_image' % os.getenv('EXTERNAL_GATEWAY_URL') files = {'file': image_file})
+        response = requests.post('%s/api/submit_image' % os.getenv('EXTERNAL_GATEWAY_URL'), files = {'file': image_file})
         if (response.status_code != 200):
             return jsonify(response.json()), response.status_code
         os.remove('./project/api/images/assets/photo.jpg')

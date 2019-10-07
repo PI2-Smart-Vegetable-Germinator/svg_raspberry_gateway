@@ -13,7 +13,7 @@ import json
 image_blueprint = Blueprint('image', __name__)
 CORS(image_blueprint)
 
-@image_blueprint.route('/api/take_photo', methods=['GET'])
+@image_blueprint.route('/api/take_photo', methods=['POST'])
 def take_photo():
     image_capture = ImageCapture()
     

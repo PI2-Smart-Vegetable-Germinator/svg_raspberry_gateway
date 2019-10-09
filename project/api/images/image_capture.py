@@ -4,6 +4,7 @@ import requests
 import time
 import io
 import os
+import json
 
 from flask import jsonify
 
@@ -21,7 +22,15 @@ class ImageCapture:
 
     def send_image(self, planting_id):
         image_file = open('./project/api/images/assets/photo.jpg', 'rb')
-        response = requests.post('%s/api/submit_image' % os.getenv('EXTERNAL_GATEWAY_URL'), files = {'file': image_file}, json = {'planting_id' : planting_id})
+
+        data = {
+            'file': image_file,
+            'json': (None,json.dumps({
+                'planting_id': planting_id
+            }), 'application/json')
+        }
+
+        response = requests.post('%s/api/submit_image' % os.getenv('EXTERNAL_GATEWAY_URL'), files = data)
         if (response.status_code != 200):
             return jsonify(response.json()), response.status_code
         #os.remove('./project/api/images/assets/photo.jpg')

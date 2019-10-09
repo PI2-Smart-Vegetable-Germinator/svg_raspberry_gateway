@@ -21,5 +21,6 @@ def take_photo():
     #     return jsonify({
     #         'response': 'Photo was not taken',
     #     }), 503
-    planting_id = request.json['planting_id']
-    return image_capture.send_image(planting_id)
+    post_data = request.get_json()
+    print(post_data)
+    return image_capture.send_image(post_data['planting_id'])

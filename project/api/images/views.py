@@ -25,6 +25,7 @@ def take_photo():
     print(post_data)
     response = image_capture.send_image(post_data['planting_id'])
 
-    return response
+    return jsonify(response.json()), response.status_code
+
 
 

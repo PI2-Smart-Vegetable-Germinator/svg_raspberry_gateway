@@ -23,4 +23,8 @@ def take_photo():
     #     }), 503
     post_data = request.get_json()
     print(post_data)
-    return image_capture.send_image(post_data['planting_id'])
+    response = image_capture.send_image(post_data['planting_id'])
+
+    return response
+
+

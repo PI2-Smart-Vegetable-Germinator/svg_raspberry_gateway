@@ -1,8 +1,7 @@
 from flask.cli import FlaskGroup
 from project import app
+from project import socketio
 
-
-cli = FlaskGroup(app)
 
 if __name__ == "__main__":
-    cli()
+    socketio.run(app, debug=True)

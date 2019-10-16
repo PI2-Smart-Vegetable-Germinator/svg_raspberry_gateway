@@ -3,6 +3,8 @@ from flask import jsonify
 from flask import render_template
 from flask import request
 
+import requests, os, json
+
 from project import socketio
 
 from random import randrange
@@ -16,6 +18,20 @@ def start_system():
 @interface_blueprint.route('/app/pairing')
 def pair_device():
     pin = randrange(9999)
+    data = {'pincode' : ('%04d' % pin)}
+
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        if machine_info.get('id'):
+            data['id'] = machine_info.get('id')
+
+    response = requests.post('%s/api/machine' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+
+    if response.json().get('machineId'):
+        with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
+            json.dump({'id' : response.json()['machineId']}, json_file)
+
     return render_template('pairing.html', pin=('%04d' % pin))
 
 @interface_blueprint.route('/app/home')

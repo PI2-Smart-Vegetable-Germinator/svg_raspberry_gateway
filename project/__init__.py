@@ -6,6 +6,10 @@ from flask import render_template, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 socketio = SocketIO()
 
 app_config = os.getenv('APP_SETTINGS')

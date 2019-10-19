@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='start_screen.css') }}">
+  <title>SVG</title>
+</head>
+
+<body>
+  <section class="container">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="logo">
+    {% if hasId %}
+      <button type="button" onclick="window.location.href='{{ url_for( 'interface.home' ) }}';" class="btn-start">Iniciar Sistema</button>
+    {% else %}
+      <button type="button" onclick="window.location.href='{{ url_for( 'interface.pair_device' ) }}';" class="btn-start">Iniciar Sistema</button>
+    {% endif %}
+    </section>
+</body>
+
+</html>

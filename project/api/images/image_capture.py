@@ -12,6 +12,9 @@ class ImageCapture:
     def trigger_image_capture(self):
         # Open a file to replace the previous picture
         image_file = open('./project/api/images/assets/photo.jpg', 'wb')
+
+        # camera = PiCamera()
+
         time.sleep(5)
         camera.capture(image_file)
         image_file.close()

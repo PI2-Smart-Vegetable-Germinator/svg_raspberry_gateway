@@ -1,0 +1,41 @@
+html {
+  margin: 0;
+}
+
+body {
+  background-color: #87b950;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 380px;
+  height: 200px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.pincode {
+  background-color: #424c59;
+  height: 45px;
+  width: 200px;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+h3 {
+  text-align: center;
+}

@@ -13,7 +13,13 @@ interface_blueprint = Blueprint("interface", __name__)
 
 @interface_blueprint.route('/app/start')
 def start_system():
-    return render_template('start_screen.html')
+    machine_id = None
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        if machine_info.get('id'):
+            machine_id = machine_info.get('id')
+    return render_template('start_screen.html', hasId=(machine_id != None))
 
 @interface_blueprint.route('/app/pairing')
 def pair_device():

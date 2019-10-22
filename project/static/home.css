@@ -1,9 +1,85 @@
 html {
   margin: 0;
+  box-sizing: border-box;
 }
 
 body {
   background-color: #87b950;
   margin: 0;
   font-family: 'Montserrat', sans-serif;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 5px;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
+  width: 480px;
+  height: 320px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  background-color: white;
+  margin: 10px 15px;
+  width: 190px;
+  height: 100px;
+  padding: 5px 10px;
+  vertical-align: middle;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.card img {
+  height: 40px;
+}
+
+.card div {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.card div h2, h4, h6 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.btn-start {
+  align-self: flex-end;
+  margin-right: 15px;
+  background-color: #424c59;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  height: 35px;
+  width: 150px;
+  border-radius: 30px;
+  border: none;
+}
+
+.btn-start.btn-pairing {
+  width: 200px;
+}
+
+.buttons-wrapper {
+  display: flex;
+  justify-content: flex-end;
 }

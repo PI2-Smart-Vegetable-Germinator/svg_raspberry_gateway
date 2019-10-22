@@ -42,6 +42,11 @@ def pair_device():
 
 @interface_blueprint.route('/app/home')
 def home():
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        if not machine_info.get('plantingActive'):
+            return render_template('planting.html')
     return render_template('home.html')
 
 @interface_blueprint.route('/api/confirm_pairing')

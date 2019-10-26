@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='shared.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='keyboard/css/index.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='wifi.css') }}">
+  <title>Document</title>
+</head>
+
+<body>
+  <script src="{{ url_for('static', filename='keyboard/index.js')}}"></script>
+  <section class="container" id="networks">
+    {% if success %}
+      <h2>Sucesso!</h2>
+    {% else %}
+      <h2>Erro!</h2>
+    {% endif %}
+    <div class="labels">
+      <h4>Por favor, conecte-se a uma rede Wifi antes de começar a usar o sistema.</h4>
+      <h5>Redes disponíveis:</h5>
+    </div>
+    <ul>
+      {% for cell in networks %}
+      <div class="cell-info">
+        <li>{{cell}}</li>
+        <button onclick="typePassword('{{ cell }}')" class="connect-button">Conectar</button>
+      </div>
+      {% endfor %}
+    </ul>
+  </section>
+  <section class="container" style="display: none;" id="passwordKeyboard">
+    <h4 id="passwordLabel" class="labels"></h4>
+    <div class="content">
+      <div class="cell-info">
+        <form action="" method="post">
+          <input id="inputSsid" type="hidden" name="ssid">
+          <input type="password" class="input" name="password">
+          <button type="submit" class="connect-button">Confirmar</button>
+        </form>
+      </div>
+      <div class="simple-keyboard"></div>
+    </div>
+  </section>
+  <script>
+    let chosenCell = null;
+    function typePassword(cell) {
+      chosenCell = cell;
+      const sectionToHide = document.getElementById('networks');
+      const sectionToShow = document.getElementById('passwordKeyboard');
+      const passwordLabel = document.getElementById('passwordLabel');
+      const inputSsid = document.getElementById('inputSsid');
+      passwordLabel.textContent = "Digite a senha para a rede " + chosenCell + ":";
+      sectionToHide.style.display = "none";
+      sectionToShow.style.display = "block";
+      inputSsid.value = chosenCell;
+    }
+  </script>
+  <script>
+    let Keyboard = window.SimpleKeyboard.default;
+
+    let myKey = new Keyboard({
+      onChange: input => onChange(input),
+      onKeyPress: button => onKeyPress(button)
+    });
+
+    function onChange(input) {
+      document.querySelector(".input").value = input;
+    }
+
+    function onKeyPress(button) {
+      if (button === "{shift}" || button === "{lock}") handleShift();
+    }
+    function handleShift() {
+      let currentLayout = myKey.options.layoutName;
+      let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+      myKey.setOptions({
+        layoutName: shiftToggle
+      });
+    }
+  </script>
+</body>
+
+</html>

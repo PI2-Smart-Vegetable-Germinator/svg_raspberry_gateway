@@ -9,18 +9,33 @@
   <title>Document</title>
 </head>
 <body>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+    integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf-8">
+    let socket = io();
+    socket.on('connect', function() {
+      console.log('conectô')
+    });
+    socket.on('infoUpdated', function(data) {
+      let tempLabel = document.getElementById('temp-label');
+      tempLabel.textContent = data.currentTemperature + 'º';
+
+      let humidityLabel = document.getElementById('humidity');
+      humidityLabel.textContent = data.currentHumidity + '%';
+    });
+  </script>
   <section class="container">
     <div class="card">
       <h4>Temperatura</h4>
-      <h2>25º</h2>
+      <h2 id="temp-label">25º</h2>
     </div>
     <div class="card">
       <h4>Tempo de exposição à luz</h4>
-      <h2>3h 22m</h2>
+      <h2 id="light-time">3h 22m</h2>
     </div>
     <div class="card">
       <h4>Umidade</h4>
-      <h2>30%</h2>
+      <h2 id="humidity">30%</h2>
     </div>
   </section>
 </body>

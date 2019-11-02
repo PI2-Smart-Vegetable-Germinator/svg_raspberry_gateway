@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
@@ -17,7 +18,7 @@
       console.log('connect');
       socket.emit('my event', { data: 'I\'m connected!' });
     });
-    socket.on('test', function(data) {
+    socket.on('test', function (data) {
       console.log(data);
     })
   </script>

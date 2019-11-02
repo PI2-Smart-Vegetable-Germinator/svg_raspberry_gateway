@@ -39,3 +39,14 @@ body {
 h3 {
   text-align: center;
 }
+
+.btn-start {
+  background-color: #424c59;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  height: 45px;
+  width: 200px;
+  border-radius: 30px;
+  border: none;
+}

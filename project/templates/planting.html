@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='pairing.css') }}">
+  <title>Document</title>
+</head>
+
+<body>
+  <script type="text/javascript" charset="utf-8">
+    function toggleTooltip() {
+      const firstSection = document.getElementById('planting-first-notice');
+      const secondSection = document.getElementById('planting-second-notice');
+      firstSection.style.display = "none";
+      secondSection.style.display = "flex";
+    }
+  </script>
+
+  <section class="container" id="planting-first-notice">
+    <h3>Você não possui um plantio ativo no momento. Deseja iniciar um novo plantio?</h3>
+    <button type="button" class="btn-start" onclick="toggleTooltip()">
+      Iniciar Plantio
+    </button>
+  </section>
+
+  <section class="container" id="planting-second-notice" style="display: none;">
+    <h3>Certifique-se de que as sementes e a terra estão posicionadas de forma correta na máquina antes de começar.</h3>
+    <button type="button" class="btn-start">
+      Iniciar Plantio
+    </button>
+  </section>
+</body>
+
+</html>

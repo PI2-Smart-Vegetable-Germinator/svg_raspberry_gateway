@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
 
   <title>Document</title>
 </head>
+
 <body>
   <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
     integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
@@ -25,18 +29,38 @@
     });
   </script>
   <section class="container">
-    <div class="card">
-      <h4>Temperatura</h4>
-      <h2 id="temp-label">25º</h2>
+    <div class="cards">
+      <div class="card">
+        <img src="{{ url_for('static', filename='thermometer.png') }}" alt="thermo_logo">
+        <div>
+          <h4>Temperatura</h4>
+          <h2 id="temp-label">25º</h2>
+        </div>
+      </div>
+      <div class="card">
+        <img src="{{ url_for('static', filename='sunny.png') }}" alt="sunny">
+        <div>
+          <h6>Tempo de exposição à luz</h6>
+          <h2 id="light-time">3h 22m</h2>
+        </div>
+      </div>
+      <div class="card">
+        <img src="{{ url_for('static', filename='water.png') }}" alt="water">
+        <div>
+          <h4>Umidade</h4>
+          <h2 id="humidity">30%</h2>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h4>Tempo de exposição à luz</h4>
-      <h2 id="light-time">3h 22m</h2>
-    </div>
-    <div class="card">
-      <h4>Umidade</h4>
-      <h2 id="humidity">30%</h2>
+    <div class="buttons-wrapper">
+      <button type="button" class="btn-start btn-pairing">
+        Parear Dispositivo
+      </button>
+      <button type="button" class="btn-start">
+        Irrigar Agora
+      </button>
     </div>
   </section>
 </body>
+
 </html>

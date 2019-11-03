@@ -28,7 +28,23 @@
       humidityLabel.textContent = data.currentHumidity + '%';
     });
   </script>
-  <section class="container">
+  <script type="text/javascript" charset="utf-8">
+    function startIrrigation() {
+      document.getElementById('irrigation-label').textContent = 'Irrigação iniciada. Por favor, aguarde...';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('irrigation').style.display = 'flex';
+      fetch('http://localhost:5005/api/start_irrigation');
+      setTimeout(() => {
+        document.getElementById('irrigation-label').textContent = 'Irrigação concluída!';
+        setTimeout(() => {
+          document.getElementById('irrigation').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'flex';
+          fetch('http://localhost:5005/api/end_irrigation');
+        }, 2000)
+      }, 10000);
+    }
+  </script>
+  <section class="container" id="dashboard">
     <div class="cards">
       <div class="card">
         <img src="{{ url_for('static', filename='thermometer.png') }}" alt="thermo_logo">
@@ -56,9 +72,17 @@
       <button type="button" class="btn-start btn-pairing">
         Parear Dispositivo
       </button>
-      <button type="button" class="btn-start">
+      <button onclick="startIrrigation();" type="button" class="btn-start">
         Irrigar Agora
       </button>
+    </div>
+  </section>
+  <section class="container" id="irrigation" style="display: none;">
+    <div class="irrigation-info">
+      <img src="{{ url_for('static', filename='water.png') }}" alt="water">
+      <div>
+        <h3 id="irrigation-label"></h3>
+      </div>
     </div>
   </section>
 </body>

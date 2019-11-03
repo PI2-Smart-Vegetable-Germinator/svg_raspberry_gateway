@@ -55,3 +55,27 @@ def home():
 def confirm_pairing():
     socketio.emit('device_paired', {'success': True})
     return jsonify({'success': True}), 200
+
+@interface_blueprint.route('/api/start_irrigation')
+def start_irrigation():
+    data = {}
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        data['plantingId'] = machine_info.get('plantingId')
+
+    response = requests.post('%s/api/start_irrigation' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+
+    return jsonify({'success': True}), 200
+
+@interface_blueprint.route('/api/end_irrigation')
+def end_irrigation():
+    data = {}
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        data['plantingId'] = machine_info.get('plantingId')
+
+    response = requests.post('%s/api/end_irrigation' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+
+    return jsonify({'success': True}), 200

@@ -40,6 +40,15 @@ h3 {
   text-align: center;
 }
 
+select {
+  margin-bottom: 10px;
+}
+
+.warn-planting {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
 .btn-start {
   background-color: #424c59;
   color: white;

@@ -106,3 +106,20 @@ def start_planting():
         json.dump(machine_info, json_file)
 
     return jsonify({'success': True}), 201
+
+@interface_blueprint.route('/api/end_planting')
+def end_planting():
+    post_data = {}
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        post_data['plantingId'] = machine_info.get('plantingId')
+
+    response = requests.post('%s/api/end_planting' % os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+    machine_info['plantingActive'] = False
+    machine_info['plantingId'] = None
+
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
+        json.dump(machine_info, json_file)
+
+    return jsonify({'success': True}), 201

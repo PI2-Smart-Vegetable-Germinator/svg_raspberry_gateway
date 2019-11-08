@@ -43,6 +43,13 @@
         }, 2000)
       }, 10000);
     }
+
+    function endCycle() {
+      fetch('http://localhost:5005/api/end_planting')
+        .then((response) => {
+          window.location.href='{{ url_for( 'interface.home' ) }}';
+        });
+    }
   </script>
   <section class="container" id="dashboard">
     <div class="cards">
@@ -53,28 +60,34 @@
           <h2 id="temp-label">25º</h2>
         </div>
       </div>
-      <div class="card">
-        <img src="{{ url_for('static', filename='sunny.png') }}" alt="sunny">
-        <div>
-          <h6>Tempo de exposição à luz</h6>
-          <h2 id="light-time">3h 22m</h2>
+      <div class="btn-card">
+        <div class="btn-card-info btn-card-info--light">
+          <img src="{{ url_for('static', filename='sunny.png') }}" alt="sunny">
+          <div>
+            <h6>Tempo de exposição à luz</h6>
+            <h2 id="light-time">3h 22m</h2>
+          </div>
         </div>
+        <button>Alternar Iluminação</button>
       </div>
-      <div class="card">
-        <img src="{{ url_for('static', filename='water.png') }}" alt="water">
-        <div>
-          <h4>Umidade</h4>
-          <h2 id="humidity">30%</h2>
+      <div class="btn-card">
+        <div class="btn-card-info">
+          <img src="{{ url_for('static', filename='water.png') }}" alt="water">
+          <div>
+            <h4>Umidade</h4>
+            <h2 id="humidity">30%</h2>
+          </div>
         </div>
+        <button onclick="startIrrigation();" type="button">Irrigar agora</button>
       </div>
-    </div>
-    <div class="buttons-wrapper">
-      <button type="button" class="btn-start btn-pairing">
-        Parear Dispositivo
-      </button>
-      <button onclick="startIrrigation();" type="button" class="btn-start">
-        Irrigar Agora
-      </button>
+      <div class="buttons-wrapper">
+        <button type="button" class="btn-start btn-pairing">
+          Parear Dispositivo
+        </button>
+        <button onclick="endCycle();" type="button" class="btn-start btn-pairing">
+          Encerrar Ciclo
+        </button>
+      </div>
     </div>
   </section>
   <section class="container" id="irrigation" style="display: none;">

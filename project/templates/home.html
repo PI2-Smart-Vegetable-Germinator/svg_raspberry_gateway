@@ -44,6 +44,10 @@
       }, 10000);
     }
 
+    function toggleIllumination() {
+      fetch('http://localhost:5005/api/toggle_illumination')
+    }
+
     function endCycle() {
       fetch('http://localhost:5005/api/end_planting')
         .then((response) => {
@@ -68,7 +72,7 @@
             <h2 id="light-time">3h 22m</h2>
           </div>
         </div>
-        <button>Alternar Iluminação</button>
+        <button onclick="toggleIllumination();">Alternar Iluminação</button>
       </div>
       <div class="btn-card">
         <div class="btn-card-info">

@@ -9,6 +9,15 @@ from project import socketio
 
 from random import randrange
 
+import RPi.GPIO as GPIO
+
+irrigation = 17
+illumination = 17
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.OUT)
+
+
 interface_blueprint = Blueprint("interface", __name__)
 
 @interface_blueprint.route('/app/start')
@@ -82,6 +91,20 @@ def end_irrigation():
     response = requests.post('%s/api/end_irrigation' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
     return jsonify({'success': True}), 200
+
+
+@interface_blueprint.route('/api/toggle_illumination')
+def toggle_illumination():
+    current_value = GPIO.input(illumination)
+    print(current_value)
+
+    if current_value:
+        GPIO.output(illumination, 0)
+    else:
+        GPIO.output(illumination, 1)
+
+    return jsonify({}), 200
+
 
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
 def start_planting():

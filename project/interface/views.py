@@ -71,6 +71,9 @@ def confirm_pairing():
     return jsonify({'success': True}), 200
 
 
+
+# SECTION IRRIGATION --------------------------------------------------    
+
 @interface_blueprint.route('/api/start_irrigation')
 def start_irrigation():
     data = {}
@@ -84,16 +87,10 @@ def start_irrigation():
 
     return jsonify({'success': True}), 200
 
-
 @interface_blueprint.route('/api/app/start_irrigation')
 def app_start_irrigation():
 
     return jsonify({'success': True, 'app_start_irrigation': 'testinho-top'}), 200
-
-@interface_blueprint.route('/api/app/end_irrigation')
-def app_end_irrigation():
-
-    return jsonify({'success': True, 'app_end_irrigation': 'testinho-fim'}), 200
 
 
 @interface_blueprint.route('/api/end_irrigation')
@@ -109,6 +106,43 @@ def end_irrigation():
 
     return jsonify({'success': True}), 200
 
+@interface_blueprint.route('/api/app/end_irrigation')
+def app_end_irrigation():
+
+    return jsonify({'success': True, 'app_end_irrigation': 'testinho-fim'}), 200
+
+
+
+# SECTION ILLUMINATION --------------------------------------------------    
+
+
+@interface_blueprint.route('/api/start_illumination')
+def start_illumination():
+    data = {}
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        data['plantingId'] = machine_info.get('plantingId')
+
+    response = requests.post('%s/api/start_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+
+    return jsonify({'success': True}), 200
+
+@interface_blueprint.route('/api/end_illumination')
+def end_illumination():
+    data = {}
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        data['plantingId'] = machine_info.get('plantingId')
+
+    response = requests.post('%s/api/end_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+
+    return jsonify({'success': True}), 200
+
+
+
+# SECTION PLANTING --------------------------------------------------    
 
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
 def start_planting():

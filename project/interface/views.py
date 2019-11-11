@@ -128,6 +128,11 @@ def start_illumination():
 
     return jsonify({'success': True}), 200
 
+@interface_blueprint.route('/api/app/start_illumination')
+def app_start_illumination():
+
+    return jsonify({'success': True, 'app_start_illumination': 'testinho-top'}), 200
+
 @interface_blueprint.route('/api/end_illumination')
 def end_illumination():
     data = {}
@@ -139,6 +144,11 @@ def end_illumination():
     response = requests.post('%s/api/end_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
     return jsonify({'success': True}), 200
+
+@interface_blueprint.route('/api/app/end_illumination')
+def app_end_illumination():
+
+    return jsonify({'success': True, 'app_end_illumination': 'testinho-top'}), 200
 
 
 

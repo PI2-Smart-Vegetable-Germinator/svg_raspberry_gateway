@@ -2,7 +2,6 @@ from flask import Blueprint
 from flask import jsonify
 from flask import render_template
 from flask import request
-
 import requests
 import os
 import json
@@ -155,28 +154,51 @@ def app_end_illumination():
 
 # SECTION PLANTING --------------------------------------------------    
 
+import serial
+from threading import Thread
+import time
+
+def monitor_planting_progress():
+    #comunicacaoSerial = serial.Serial('/dev/ttyUSB0', 9600, timeout=3)
+    print('??')
+    socketio.emit('erroPresenca', {'success': False})
+    #while True:
+    #    time.sleep(1)
+    #    line = comunicacaoSerial.readline().decode('utf-8')
+    #    print('oi to na thread') 
+    #    if "falsapresenca" in line:
+    #        print('oi deu erro na thread devia emitir agora')
+    #        socketio.emit('erroPresenca', {'success': False})
+    #        comunicacaoSerial.close()
+
+     #       break
+
+#from esp_commands.start_planting import activate_planting
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
 def start_planting():
-    post_data = request.get_json()
-    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
-        machine_info = json.load(json_file)
+    #activate_planting()
+    t = Thread(target=monitor_planting_progress)
+    t.start()
+    #post_data = request.get_json()
+    #with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+    #    machine_info = json.load(json_file)
 
-        post_data['machineId'] = machine_info.get('id')
+    #    post_data['machineId'] = machine_info.get('id')
 
-    with open(os.path.dirname(__file__) + '/../../test_data.json') as json_file:
-        sensor_info = json.load(json_file)
-        post_data['currentTemperature'] = sensor_info['temperature']
-        post_data['currentHumidity'] = sensor_info['humidity']
+    #with open(os.path.dirname(__file__) + '/../../test_data.json') as json_file:
+    #    sensor_info = json.load(json_file)
+    #    post_data['currentTemperature'] = sensor_info['temperature']
+    #    post_data['currentHumidity'] = sensor_info['humidity']
 
-    response = requests.post('%s/api/start_planting' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+    #response = requests.post('%s/api/start_planting' %
+    #                         os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
 
-    response_json = response.json()
-    machine_info['plantingActive'] = True
-    machine_info['plantingId'] = response_json.get('plantingId')
+    #response_json = response.json()
+    #machine_info['plantingActive'] = True
+    #machine_info['plantingId'] = response_json.get('plantingId')
 
-    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
-        json.dump(machine_info, json_file)
+    #with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
+    #    json.dump(machine_info, json_file)
 
     return jsonify({'success': True}), 201
 
@@ -201,21 +223,25 @@ def end_planting():
 
 @interface_blueprint.route('/app/wifi', methods=['GET', 'POST'])
 def see_networks():
-    cells = Cell.all('wlp3s0')
+    cells = []
+    while not cells:
+        cells = Cell.all('wlan0')
 
     if request.method == 'POST':
         form = request.form
         wanted_network = None
-
+        print(form)
         for c in cells:
             if c.ssid == form['ssid']:
                 wanted_network = c
                 break
-
+        print(wanted_network)
         if wanted_network is not None:
-            scheme = Scheme.for_cell('wlp3s0', 'network', wanted_network, form['ssid'])
-            scheme.save()
-            scheme.activate()
+            scheme = Scheme.find('wlan0', form['ssid'])
+            
+            if not scheme:
+                scheme = Scheme.for_cell('wlan0', form['ssid'], wanted_network, form['password'])
+                scheme.save()
 
             return render_template('wifi.html', success=True)
 

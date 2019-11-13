@@ -12,6 +12,22 @@
 </head>
 
 <body>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+    integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function () {
+      console.log('connect');
+      socket.emit('my event', { data: 'I\'m connected!' });
+    });
+    socket.on('erroPresenca', function () {
+      console.log('deu ruim broder');
+      const waitingSection = document.getElementById('planting-waiting');
+      const errorSection = document.getElementById('planting-error');
+      waitingSection.style.display = "none";
+      errorSection.style.display = "flex";
+    });
+  </script>
   <script type="text/javascript" charset="utf-8">
     function toggleTooltip() {
       const firstSection = document.getElementById('planting-first-notice');
@@ -45,9 +61,9 @@
     }
 
     function goToHomepage() {
-      window.location.href='{{ url_for( 'interface.home' ) }}';
+      window.location.href = '{{ url_for( 'interface.home' ) }}';
     }
-   </script>
+  </script>
 
   <section class="container" id="planting-first-notice">
     <h3>Você não possui um plantio ativo no momento. Deseja iniciar um novo plantio?</h3>
@@ -57,14 +73,26 @@
   </section>
 
   <section class="container" id="planting-second-notice" style="display: none;">
-    <h3 class="warn-planting">Certifique-se de que as sementes e a terra estão posicionadas de forma correta na máquina antes de começar.</h3>
+    <h3 class="warn-planting">Certifique-se de que as sementes e a terra estão posicionadas de forma correta na máquina
+      antes de começar.</h3>
     <div class="select-area">
       <label for="seedlings">Semente escolhida:</label>
       <select name="seedlings" id="seedlings">
         {% for seedling in seedlings %}
-          <option value="{{ seedling.id }}">{{ seedling.name }}</option>
+        <option value="{{ seedling.id }}">{{ seedling.name }}</option>
         {% endfor %}
       </select>
+    </div>
+    <button type="button" class="btn-start" onclick="startPlanting()">
+      Iniciar Plantio
+    </button>
+  </section>
+
+  <section class="container" id="planting-error" style="display: none;">
+    <div class="error-container">
+      <img src="{{ url_for('static', filename='warning.png') }}" alt="warning">
+      <h3 class="warn-planting">Sementeira mal posicionada ou não colocada. Por favor, posicione a sementeira
+        corretamente.</h3>
     </div>
     <button type="button" class="btn-start" onclick="startPlanting()">
       Iniciar Plantio
@@ -76,11 +104,11 @@
   </section>
 
   <section class="container" id="planting-success" style="display: none;">
-      <h3>Plantio realizado com sucesso!</h3>
-      <button type="button" class="btn-start" onclick="goToHomepage()">
-        Ir para home
-      </button>
-    </section>
+    <h3>Plantio realizado com sucesso!</h3>
+    <button type="button" class="btn-start" onclick="goToHomepage()">
+      Ir para home
+    </button>
+  </section>
 </body>
 
 </html>

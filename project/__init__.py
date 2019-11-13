@@ -7,6 +7,8 @@ from flask import render_template, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
+from esp_commands.sensor_data import get_sensor_data
+
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 
@@ -31,13 +33,12 @@ app.register_blueprint(image_blueprint)
 app.register_blueprint(interface_blueprint)
 
 def get_updated_info():
-    with open(os.path.dirname(__file__) + '/../test_data.json') as json_file:
-        sensor_info = json.load(json_file)
-        data = {
-            'currentTemperature': sensor_info['temperature'],
-            'currentHumidity': sensor_info['humidity'],
-        }
-        print(data)
+    sensor_info = get_sensor_data()
+    data = {
+        'currentTemperature': sensor_info['TemperaturaAr'],
+        'currentHumidity': sensor_info['UmidadeSolo'],
+    }
+    print(data)
     
     requests.post('http://localhost:5005/update_info', json=data)
 

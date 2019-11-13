@@ -6,6 +6,7 @@ from flask import request
 import requests
 import os
 import json
+from wifi import Cell, Scheme
 
 from project import socketio
 
@@ -197,3 +198,36 @@ def end_planting():
         json.dump(machine_info, json_file)
 
     return jsonify({'success': True}), 201
+
+@interface_blueprint.route('/app/wifi', methods=['GET', 'POST'])
+def see_networks():
+    cells = Cell.all('wlp3s0')
+
+    if request.method == 'POST':
+        form = request.form
+        wanted_network = None
+
+        for c in cells:
+            if c.ssid == form['ssid']:
+                wanted_network = c
+                break
+
+        if wanted_network is not None:
+            scheme = Scheme.for_cell('wlp3s0', 'network', wanted_network, form['ssid'])
+            scheme.save()
+            scheme.activate()
+
+            return render_template('wifi.html', success=True)
+
+        return render_template('wifi.html', success=False)
+
+
+    networks = []
+    for c in cells:
+        networks.append(c.ssid)
+
+    return render_template('wifi.html', networks=networks)
+
+@interface_blueprint.route('/app/key')
+def keyboard():
+    return render_template('keyboard.html')

@@ -165,17 +165,19 @@ import time
 def monitor_planting_progress():
     #comunicacaoSerial = serial.Serial('/dev/ttyUSB0', 9600, timeout=3)
     print('??')
-    socketio.emit('erroPresenca', {'success': False})
-    #while True:
-    #    time.sleep(1)
-    #    line = comunicacaoSerial.readline().decode('utf-8')
-    #    print('oi to na thread') 
-    #    if "falsapresenca" in line:
-    #        print('oi deu erro na thread devia emitir agora')
-    #        socketio.emit('erroPresenca', {'success': False})
-    #        comunicacaoSerial.close()
+    # #socketio.emit('erroPresenca', {'success': False})
+    # time.sleep(5)
+    # socketio.emit('plantingSuccess', {'success': True})
+    while True:
+       time.sleep(1)
+       line = comunicacaoSerial.readline().decode('utf-8')
+       print('oi to na thread') 
+       if "falsapresenca" in line:
+           print('oi deu erro na thread devia emitir agora')
+           socketio.emit('erroPresenca', {'success': False})
+           comunicacaoSerial.close()
 
-     #       break
+           break
 
 #from esp_commands.start_planting import activate_planting
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
@@ -206,10 +208,10 @@ def start_planting():
 
     return jsonify({'success': True}), 201
 
-
+from esp_commands.start_planting import cancel_planting
 @interface_blueprint.route('/api/cancel_planting')
 def cancel_planting():
-    
+    cancel_planting()
     return jsonify({'success': True}), 201
 
 @interface_blueprint.route('/api/end_planting')

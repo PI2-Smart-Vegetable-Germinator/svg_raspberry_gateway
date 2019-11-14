@@ -27,6 +27,12 @@
       waitingSection.style.display = "none";
       errorSection.style.display = "flex";
     });
+    socket.on('plantingSuccess', function () {
+      const waitingSection = document.getElementById('planting-waiting');
+      const successSection = document.getElementById('planting-success');
+      waitingSection.style.display = "none";
+      successSection.style.display = "flex";
+    });
   </script>
   <script type="text/javascript" charset="utf-8">
     function toggleTooltip() {

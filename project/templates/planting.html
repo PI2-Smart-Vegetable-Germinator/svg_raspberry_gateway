@@ -53,11 +53,26 @@
         waitingSection.style.display = "flex";
 
         setTimeout(() => {
-          const successSection = document.getElementById('planting-success');
-          waitingSection.style.display = "none";
-          successSection.style.display = "flex";
+          // const successSection = document.getElementById('planting-success');
+          // waitingSection.style.display = "none";
+          // successSection.style.display = "flex";
         }, 4000)
       });
+    }
+
+    function cancelPlanting() {
+      fetch('http://localhost:5005/api/cancel_planting', {
+        method: 'get',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then((response) => {
+        const waitingSection = document.getElementById('planting-waiting');
+        waitingSection.style.display = "none";
+        const canceledSection = document.getElementById('planting-canceled');
+        canceledSection.style.display = "flex";
+      })
     }
 
     function goToHomepage() {
@@ -101,6 +116,16 @@
 
   <section class="container" id="planting-waiting" style="display: none;">
     <h3 class="warn-planting">Plantio iniciado. Por favor, aguarde...</h3>
+    <button class="btn-start btn-cancel" onclick="cancelPlanting()">
+      Cancelar
+    </button>
+  </section>
+
+  <section class="container" id="planting-canceled" style="display: none;">
+    <h3 class="warn-planting">Plantio cancelado com sucesso!</h3>
+    <button class="btn-start btn-canceled" onclick="goToHomepage()">
+      Voltar
+    </button>
   </section>
 
   <section class="container" id="planting-success" style="display: none;">

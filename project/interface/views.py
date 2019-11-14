@@ -41,6 +41,10 @@ def pair_device():
     response = requests.post('%s/api/machine' %
                              os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
+    print("\n\n=============")
+    print(response.url)
+    print("=============\n\n")
+
     if response.json().get('machineId'):
         with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
             existing_info = {}
@@ -202,6 +206,11 @@ def start_planting():
 
     return jsonify({'success': True}), 201
 
+
+@interface_blueprint.route('/api/cancel_planting')
+def cancel_planting():
+    
+    return jsonify({'success': True}), 201
 
 @interface_blueprint.route('/api/end_planting')
 def end_planting():

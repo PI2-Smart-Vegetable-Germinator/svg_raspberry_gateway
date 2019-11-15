@@ -26,8 +26,23 @@ ul {
   border-radius: 5px;
 }
 
+h4 {
+  margin-bottom: 0;
+}
+
 .labels {
   color: white;
+}
+
+.refresh-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+img {
+  width: 20px;
+  height: 20px;
 }
 
 .cell-info {

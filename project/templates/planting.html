@@ -57,12 +57,6 @@
         const waitingSection = document.getElementById('planting-waiting');
         secondSection.style.display = "none";
         waitingSection.style.display = "flex";
-
-        setTimeout(() => {
-          // const successSection = document.getElementById('planting-success');
-          // waitingSection.style.display = "none";
-          // successSection.style.display = "flex";
-        }, 4000)
       });
     }
 
@@ -79,6 +73,21 @@
         const canceledSection = document.getElementById('planting-canceled');
         canceledSection.style.display = "flex";
       })
+    }
+
+    function confirmPlanting() {
+      fetch('http://localhost:5005/api/confirm_planting', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "seedlingId": selectedOption.value })
+      }).then((response) => {
+        window.location.href = '{{ url_for( 'interface.home' ) }}';
+      }).catch((err) => {
+
+      });
     }
 
     function goToHomepage() {
@@ -136,7 +145,7 @@
 
   <section class="container" id="planting-success" style="display: none;">
     <h3>Plantio realizado com sucesso!</h3>
-    <button type="button" class="btn-start" onclick="goToHomepage()">
+    <button type="button" class="btn-start" onclick="confirmPlanting()">
       Ir para home
     </button>
   </section>

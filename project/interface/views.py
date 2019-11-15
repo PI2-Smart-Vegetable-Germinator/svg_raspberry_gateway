@@ -52,6 +52,8 @@ def pair_device():
     return render_template('pairing.html', pin=('%04d' % pin))
 
 
+from esp_commands.sensor_data import get_sensor_data
+
 @interface_blueprint.route('/app/home')
 def home():
     if not check_connection():
@@ -69,7 +71,14 @@ def home():
             seedlings_data = json.load(seedlings_file)
             seedlings_file.close()
             return render_template('planting.html', seedlings=seedlings_data['seedlings'])
-    return render_template('home.html')
+
+    sensor_info = get_sensor_data()
+    data = {
+        'currentTemperature': sensor_info['TemperaturaAr'],
+        'currentHumidity': sensor_info['UmidadeSolo'],
+    }
+
+    return render_template('home.html', data=data)
 
 
 @interface_blueprint.route('/api/confirm_pairing')
@@ -165,51 +174,45 @@ import serial
 from threading import Thread
 import time
 
-def monitor_planting_progress():
-    #comunicacaoSerial = serial.Serial('/dev/ttyUSB0', 9600, timeout=3)
-    print('??')
-    # #socketio.emit('erroPresenca', {'success': False})
-    # time.sleep(5)
-    # socketio.emit('plantingSuccess', {'success': True})
-    while True:
-       time.sleep(1)
-       line = comunicacaoSerial.readline().decode('utf-8')
-       print('oi to na thread')
-       if "falsapresenca" in line:
-           print('oi deu erro na thread devia emitir agora')
-           socketio.emit('erroPresenca', {'success': False})
-           comunicacaoSerial.close()
 
-           break
 
 from esp_commands.start_planting import activate_planting
+from esp_commands.start_planting import monitor_planting_progress
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
 def start_planting():
-    #activate_planting()
+    activate_planting()
     t = Thread(target=monitor_planting_progress)
     t.start()
-    #post_data = request.get_json()
-    #with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
-    #    machine_info = json.load(json_file)
+    return jsonify({'success': True}), 201
 
-    #    post_data['machineId'] = machine_info.get('id')
 
-    #with open(os.path.dirname(__file__) + '/../../test_data.json') as json_file:
-    #    sensor_info = json.load(json_file)
-    #    post_data['currentTemperature'] = sensor_info['temperature']
-    #    post_data['currentHumidity'] = sensor_info['humidity']
+@interface_blueprint.route('/api/confirm_planting', methods=['POST'])
+def confirm_planting():
+    post_data = request.get_json()
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+       machine_info = json.load(json_file)
 
-    #response = requests.post('%s/api/start_planting' %
-    #                         os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+       post_data['machineId'] = machine_info.get('id')
 
-    #response_json = response.json()
-    #machine_info['plantingActive'] = True
-    #machine_info['plantingId'] = response_json.get('plantingId')
 
-    #with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
-    #    json.dump(machine_info, json_file)
+    sensor_info = get_sensor_data()
+    data = {
+        'currentTemperature': sensor_info['TemperaturaAr'],
+        'currentHumidity': sensor_info['UmidadeSolo'],
+    }
+
+    response = requests.post('%s/api/start_planting' %
+                            os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+
+    response_json = response.json()
+    machine_info['plantingActive'] = True
+    machine_info['plantingId'] = response_json.get('plantingId')
+
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
+       json.dump(machine_info, json_file)
 
     return jsonify({'success': True}), 201
+
 
 from esp_commands.start_planting import cancel_planting
 @interface_blueprint.route('/api/cancel_planting')

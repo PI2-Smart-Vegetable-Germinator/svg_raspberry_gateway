@@ -16,12 +16,12 @@
     integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
     let socket = io();
-    socket.on('connect', function() {
+    socket.on('connect', function () {
       console.log('conectô')
     });
-    socket.on('infoUpdated', function(data) {
+    socket.on('infoUpdated', function (data) {
       let tempLabel = document.getElementById('temp-label');
-      tempLabel.textContent = data.currentTemperature + 'º';
+      tempLabel.textContent = data.currentTemperature + '°';
 
       let humidityLabel = document.getElementById('humidity');
       humidityLabel.textContent = data.currentHumidity + '%';
@@ -46,7 +46,7 @@
     function endCycle() {
       fetch('http://localhost:5005/api/end_planting')
         .then((response) => {
-          window.location.href='{{ url_for( 'interface.home' ) }}';
+          window.location.href = '{{ url_for( 'interface.home' ) }}';
         });
     }
   </script>
@@ -56,7 +56,7 @@
         <img src="{{ url_for('static', filename='thermometer.png') }}" alt="thermo_logo">
         <div>
           <h4>Temperatura</h4>
-          <h2 id="temp-label">25º</h2>
+          <h2 id="temp-label">{{ data.currentTemperature + "°" }}</h2>
         </div>
       </div>
       <div class="btn-card">
@@ -74,7 +74,7 @@
           <img src="{{ url_for('static', filename='water.png') }}" alt="water">
           <div>
             <h4>Umidade</h4>
-            <h2 id="humidity">30%</h2>
+            <h2 id="humidity">{{ data.currentHumidity + "%" }}</h2>
           </div>
         </div>
         <button onclick="startIrrigation();" type="button">Irrigar agora</button>

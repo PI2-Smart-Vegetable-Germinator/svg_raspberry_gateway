@@ -15,6 +15,8 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
     integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
+    let wasCanceled = false;
+
     var socket = io();
     socket.on('connect', function () {
       console.log('connect');
@@ -28,13 +30,19 @@
       errorSection.style.display = "flex";
     });
     socket.on('plantingSuccess', function () {
-      const waitingSection = document.getElementById('planting-waiting');
-      const successSection = document.getElementById('planting-success');
-      waitingSection.style.display = "none";
-      successSection.style.display = "flex";
+      if (!wasCanceled) {
+        const waitingSection = document.getElementById('planting-waiting');
+        const successSection = document.getElementById('planting-success');
+        waitingSection.style.display = "none";
+        successSection.style.display = "flex";
+      } else {
+        const waitingSection = document.getElementById('waiting-canceled');
+        const successSection = document.getElementById('planting-canceled');
+        waitingSection.style.display = "none";
+        successSection.style.display = "flex";
+      }
     });
-  </script>
-  <script type="text/javascript" charset="utf-8">
+
     function toggleTooltip() {
       const firstSection = document.getElementById('planting-first-notice');
       const secondSection = document.getElementById('planting-second-notice');
@@ -61,6 +69,7 @@
     }
 
     function cancelPlanting() {
+      wasCanceled = true;
       fetch('http://localhost:5005/api/cancel_planting', {
         method: 'get',
         headers: {
@@ -70,12 +79,14 @@
       }).then((response) => {
         const waitingSection = document.getElementById('planting-waiting');
         waitingSection.style.display = "none";
-        const canceledSection = document.getElementById('planting-canceled');
+        const canceledSection = document.getElementById('waiting-canceled');
         canceledSection.style.display = "flex";
       })
     }
 
     function confirmPlanting() {
+      const selectedOption = dropdown.options[dropdown.selectedIndex];
+
       fetch('http://localhost:5005/api/confirm_planting', {
         method: 'post',
         headers: {
@@ -134,6 +145,10 @@
     <button class="btn-start btn-cancel" onclick="cancelPlanting()">
       Cancelar
     </button>
+  </section>
+
+  <section class="container" id="canceled-waiting" style="display: none;">
+    <h3 class="warn-planting">Cancelando o plantio...</h3>
   </section>
 
   <section class="container" id="planting-canceled" style="display: none;">

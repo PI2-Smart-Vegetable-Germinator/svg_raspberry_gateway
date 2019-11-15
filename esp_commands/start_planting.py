@@ -23,7 +23,7 @@ def stop_planting():
         print(str(e))
         return
     
-    comunicacaoSerial.write(b'cancelar')
+    comunicacaoSerial.write(b'cancela')
 
     comunicacaoSerial.close()
 

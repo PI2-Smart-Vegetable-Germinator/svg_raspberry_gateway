@@ -1,7 +1,9 @@
 from flask import Blueprint
 from flask import jsonify
+from flask import redirect
 from flask import render_template
 from flask import request
+from flask import url_for
 import requests
 import os
 import json
@@ -17,13 +19,7 @@ interface_blueprint = Blueprint("interface", __name__)
 
 @interface_blueprint.route('/app/start')
 def start_system():
-    machine_id = None
-    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
-        machine_info = json.load(json_file)
-
-        if machine_info.get('id'):
-            machine_id = machine_info.get('id')
-    return render_template('start_screen.html', hasId=(machine_id != None))
+    return render_template('start_screen.html')
 
 
 @interface_blueprint.route('/app/pairing')
@@ -59,10 +55,13 @@ def pair_device():
 @interface_blueprint.route('/app/home')
 def home():
     if not check_connection():
-        return render_template('wifi.html')
+        return redirect('wifi')
 
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'r+') as json_file:
         machine_info = json.load(json_file)
+
+        if not machine_info.get('id'):
+            return redirect('pairing')
 
         if not machine_info.get('plantingActive'):
             seedlings_file = open(os.path.dirname(

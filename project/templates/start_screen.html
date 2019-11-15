@@ -14,12 +14,10 @@
 <body>
   <section class="container">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="logo">
-    {% if hasId %}
-      <button type="button" onclick="window.location.href='{{ url_for( 'interface.home' ) }}';" class="btn-start">Iniciar Sistema</button>
-    {% else %}
-      <button type="button" onclick="window.location.href='{{ url_for( 'interface.pair_device' ) }}';" class="btn-start">Iniciar Sistema</button>
-    {% endif %}
-    </section>
+    <button type="button" onclick="window.location.href='{{ url_for( 'interface.home' ) }}';" class="btn-start">
+      Iniciar Sistema
+    </button>
+  </section>
 </body>
 
 </html>

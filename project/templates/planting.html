@@ -85,6 +85,7 @@
     }
 
     function confirmPlanting() {
+      const dropdown = document.getElementById('seedlings');
       const selectedOption = dropdown.options[dropdown.selectedIndex];
 
       fetch('http://localhost:5005/api/confirm_planting', {

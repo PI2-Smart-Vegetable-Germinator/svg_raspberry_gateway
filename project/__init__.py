@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+import subprocess
 
 from flask import Flask
 from flask import render_template, jsonify, request
@@ -57,6 +58,9 @@ def update_info():
 cron = BackgroundScheduler()
 cron.add_job(get_updated_info, 'interval', minutes=15)
 cron.start()
+
+if not os.path.exists('/etc/wpa_supplicant/wpa_supplicant.conf.backup'):
+    subprocess.call(["sudo", "cp", "/etc/wpa_supplicant/wpa_supplicant.conf", "/etc/wpa_supplicant/wpa_supplicant.conf.backup"])
 
 
 @app.route('/test')

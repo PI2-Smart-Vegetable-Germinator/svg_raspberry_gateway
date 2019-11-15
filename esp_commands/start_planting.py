@@ -17,7 +17,7 @@ def activate_planting():
 
     comunicacaoSerial.close()
 
-def cancel_planting():
+def stop_planting():
     try:
         comunicacaoSerial = serial.Serial('/dev/ttyUSB0', 9600, timeout=3)
     except serial.SerialException as e:

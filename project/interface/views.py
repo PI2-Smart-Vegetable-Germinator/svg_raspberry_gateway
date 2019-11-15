@@ -211,10 +211,10 @@ def start_planting():
 
     return jsonify({'success': True}), 201
 
-from esp_commands.start_planting import cancel_planting
+from esp_commands.start_planting import stop_planting
 @interface_blueprint.route('/api/cancel_planting')
 def cancel_planting():
-    cancel_planting()
+    stop_planting()
     return jsonify({'success': True}), 201
 
 @interface_blueprint.route('/api/end_planting')
@@ -236,26 +236,49 @@ def end_planting():
     return jsonify({'success': True}), 201
 
 import subprocess
+import time
 @interface_blueprint.route('/app/wifi', methods=['GET', 'POST'])
 def see_networks():
+    error = False
     cells = []
     while not cells:
         cells = Cell.all('wlan0')
-
-    if request.method == 'POST':
-        form = request.form
-        path = os.path.dirname(__file__) + "/wifi-connection.sh"
-
-        subprocess.call([path, form['password'], form['ssid']])
-
-        return render_template('wifi.html', success=True)
-
 
     networks = []
     for c in cells:
         networks.append(c.ssid)
 
-    return render_template('wifi.html', networks=networks)
+    return render_template('wifi.html', networks=networks, error=error, form=None)
+
+@interface_blueprint.route('/api/connect', methods=['POST'])
+def connect_to_wifi():
+    post_data = request.get_json()
+    print(post_data)
+
+    base_path = os.path.dirname(__file__)
+
+    connect_path = base_path + "/wifi-connection.sh"
+
+    print(post_data['password'])
+    print(post_data['ssid'])
+
+
+    subprocess.call([connect_path, post_data['password'], post_data['ssid']])
+
+    for i in range(0, 4):
+        time.sleep(5)
+        if check_connection():
+            return jsonify({
+                'success': True
+            }), 201
+
+    reset_path = base_path + "/reset-wpa.sh"
+    subprocess.call([reset_path])
+
+    return jsonify({
+        'success': False
+    }), 400
+
 
 @interface_blueprint.route('/app/key')
 def keyboard():

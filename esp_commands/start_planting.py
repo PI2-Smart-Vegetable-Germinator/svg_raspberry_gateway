@@ -1,5 +1,6 @@
 import serial
 import sys
+import time
 
 from project import socketio
 

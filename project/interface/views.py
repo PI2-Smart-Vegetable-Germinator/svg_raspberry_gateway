@@ -7,6 +7,7 @@ import os
 import json
 from wifi import Cell, Scheme
 
+from .utils import check_connection
 from project import socketio
 
 from random import randrange
@@ -57,6 +58,9 @@ def pair_device():
 
 @interface_blueprint.route('/app/home')
 def home():
+    if not check_connection():
+        return render_template('wifi.html')
+
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'r+') as json_file:
         machine_info = json.load(json_file)
 
@@ -76,7 +80,7 @@ def confirm_pairing():
 
 
 
-# SECTION IRRIGATION --------------------------------------------------    
+# SECTION IRRIGATION --------------------------------------------------
 
 @interface_blueprint.route('/api/start_irrigation')
 def start_irrigation():
@@ -117,7 +121,7 @@ def app_end_irrigation():
 
 
 
-# SECTION ILLUMINATION --------------------------------------------------    
+# SECTION ILLUMINATION --------------------------------------------------
 
 
 @interface_blueprint.route('/api/start_illumination')
@@ -156,7 +160,7 @@ def app_end_illumination():
 
 
 
-# SECTION PLANTING --------------------------------------------------    
+# SECTION PLANTING --------------------------------------------------
 
 import serial
 from threading import Thread
@@ -171,7 +175,7 @@ def monitor_planting_progress():
     while True:
        time.sleep(1)
        line = comunicacaoSerial.readline().decode('utf-8')
-       print('oi to na thread') 
+       print('oi to na thread')
        if "falsapresenca" in line:
            print('oi deu erro na thread devia emitir agora')
            socketio.emit('erroPresenca', {'success': False})
@@ -179,7 +183,7 @@ def monitor_planting_progress():
 
            break
 
-#from esp_commands.start_planting import activate_planting
+from esp_commands.start_planting import activate_planting
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
 def start_planting():
     #activate_planting()
@@ -232,6 +236,7 @@ def end_planting():
 
     return jsonify({'success': True}), 201
 
+import subprocess
 @interface_blueprint.route('/app/wifi', methods=['GET', 'POST'])
 def see_networks():
     cells = []
@@ -240,23 +245,11 @@ def see_networks():
 
     if request.method == 'POST':
         form = request.form
-        wanted_network = None
-        print(form)
-        for c in cells:
-            if c.ssid == form['ssid']:
-                wanted_network = c
-                break
-        print(wanted_network)
-        if wanted_network is not None:
-            scheme = Scheme.find('wlan0', form['ssid'])
-            
-            if not scheme:
-                scheme = Scheme.for_cell('wlan0', form['ssid'], wanted_network, form['password'])
-                scheme.save()
+        path = os.path.dirname(__file__) + "/wifi-connection.sh"
 
-            return render_template('wifi.html', success=True)
+        subprocess.call([path, form['password'], form['ssid']])
 
-        return render_template('wifi.html', success=False)
+        return render_template('wifi.html', success=True)
 
 
     networks = []

@@ -36,7 +36,7 @@
         waitingSection.style.display = "none";
         successSection.style.display = "flex";
       } else {
-        const waitingSection = document.getElementById('waiting-canceled');
+        const waitingSection = document.getElementById('canceled-waiting');
         const successSection = document.getElementById('planting-canceled');
         waitingSection.style.display = "none";
         successSection.style.display = "flex";
@@ -79,7 +79,7 @@
       }).then((response) => {
         const waitingSection = document.getElementById('planting-waiting');
         waitingSection.style.display = "none";
-        const canceledSection = document.getElementById('waiting-canceled');
+        const canceledSection = document.getElementById('canceled-waiting');
         canceledSection.style.display = "flex";
       })
     }

@@ -132,39 +132,22 @@ def app_end_irrigation():
 # SECTION ILLUMINATION --------------------------------------------------
 
 
-@interface_blueprint.route('/api/start_illumination')
-def start_illumination():
+@interface_blueprint.route('/api/switch_illumination')
+def switch_illumination():
     data = {}
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
 
         data['plantingId'] = machine_info.get('plantingId')
 
-    response = requests.post('%s/api/start_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    response = requests.post('%s/api/switch_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
-    return jsonify({'success': True}), 200
+    return jsonify({'success': True, 'currently_backlit': True}), 200
 
-@interface_blueprint.route('/api/app/start_illumination')
-def app_start_illumination():
+@interface_blueprint.route('/api/app/switch_illumination')
+def app_switch_illumination():
 
-    return jsonify({'success': True, 'app_start_illumination': 'testinho-top'}), 200
-
-@interface_blueprint.route('/api/end_illumination')
-def end_illumination():
-    data = {}
-    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
-        machine_info = json.load(json_file)
-
-        data['plantingId'] = machine_info.get('plantingId')
-
-    response = requests.post('%s/api/end_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
-
-    return jsonify({'success': True}), 200
-
-@interface_blueprint.route('/api/app/end_illumination')
-def app_end_illumination():
-
-    return jsonify({'success': True, 'app_end_illumination': 'testinho-top'}), 200
+    return jsonify({'success': True, 'currently_backlit' : True}), 200
 
 
 

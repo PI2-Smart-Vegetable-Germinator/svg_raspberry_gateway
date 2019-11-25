@@ -12,6 +12,8 @@ from wifi import Cell, Scheme
 from .utils import check_connection
 from project import socketio
 
+import esp_commands.relays as relays
+
 from random import randrange
 
 interface_blueprint = Blueprint("interface", __name__)
@@ -131,18 +133,26 @@ def app_end_irrigation():
 
 # SECTION ILLUMINATION --------------------------------------------------
 
-
 @interface_blueprint.route('/api/switch_illumination')
 def switch_illumination():
     data = {}
+    state = relays.switch_illumination()
+
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
 
         data['plantingId'] = machine_info.get('plantingId')
 
+    if state:
+        data['currently_backlit'] = "True"
+    else:
+        data['currently_backlit'] = "False"
+
+    print(data)
+
     response = requests.post('%s/api/switch_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
-    return jsonify({'success': True, 'currently_backlit': True}), 200
+    return jsonify(response.json()), response.status_code
 
 @interface_blueprint.route('/api/app/switch_illumination')
 def app_switch_illumination():

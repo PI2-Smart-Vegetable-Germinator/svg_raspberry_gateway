@@ -1,3 +1,11 @@
+import subprocess
+from esp_commands.start_planting import stop_planting
+from esp_commands.start_planting import monitor_planting_progress
+from esp_commands.start_planting import activate_planting
+import time
+from threading import Thread
+import serial
+from esp_commands.sensor_data import get_sensor_data
 from flask import Blueprint
 from flask import jsonify
 from flask import redirect
@@ -11,6 +19,8 @@ from wifi import Cell, Scheme
 
 from .utils import check_connection
 from project import socketio
+
+import esp_commands.relays as relays
 
 from random import randrange
 
@@ -55,8 +65,6 @@ def pair_device():
     return render_template('pairing.html', pin=('%04d' % pin))
 
 
-from esp_commands.sensor_data import get_sensor_data
-
 @interface_blueprint.route('/app/home')
 def home():
     if not check_connection():
@@ -90,7 +98,6 @@ def confirm_pairing():
     return jsonify({'success': True}), 200
 
 
-
 # SECTION IRRIGATION --------------------------------------------------
 
 @interface_blueprint.route('/api/start_irrigation')
@@ -102,9 +109,10 @@ def start_irrigation():
         data['plantingId'] = machine_info.get('plantingId')
 
     response = requests.post('%s/api/start_irrigation' %
-                            os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
     return jsonify({'success': True}), 200
+
 
 @interface_blueprint.route('/api/app/start_irrigation')
 def app_start_irrigation():
@@ -125,62 +133,55 @@ def end_irrigation():
 
     return jsonify({'success': True}), 200
 
+
 @interface_blueprint.route('/api/app/end_irrigation')
 def app_end_irrigation():
 
     return jsonify({'success': True, 'app_end_irrigation': 'testinho-fim'}), 200
 
 
-
 # SECTION ILLUMINATION --------------------------------------------------
 
-
-@interface_blueprint.route('/api/start_illumination')
-def start_illumination():
+@interface_blueprint.route('/api/switch_illumination')
+def switch_illumination():
     data = {}
+    state = relays.switch_illumination()
+
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
 
         data['plantingId'] = machine_info.get('plantingId')
 
-    response = requests.post('%s/api/start_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    if state:
+        data['currently_backlit'] = "True"
+    else:
+        data['currently_backlit'] = "False"
 
-    return jsonify({'success': True}), 200
+    response = requests.post('%s/api/switch_illumination' %
+                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
 
-@interface_blueprint.route('/api/app/start_illumination')
-def app_start_illumination():
+    return jsonify(response.json()), response.status_code
 
-    return jsonify({'success': True, 'app_start_illumination': 'testinho-top'}), 200
 
-@interface_blueprint.route('/api/end_illumination')
-def end_illumination():
+@interface_blueprint.route('/api/app/switch_illumination')
+def app_switch_illumination():
     data = {}
+    state = relays.switch_illumination()
+
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
 
         data['plantingId'] = machine_info.get('plantingId')
 
-    response = requests.post('%s/api/end_illumination' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
-
-    return jsonify({'success': True}), 200
-
-@interface_blueprint.route('/api/app/end_illumination')
-def app_end_illumination():
-
-    return jsonify({'success': True, 'app_end_illumination': 'testinho-top'}), 200
-
+    if state:
+        return jsonify({'success': True, 'currently_backlit': True}), 200
+    else:
+        return jsonify({'success': True, 'currently_backlit': False}), 200
 
 
 # SECTION PLANTING --------------------------------------------------
 
-import serial
-from threading import Thread
-import time
 
-
-
-from esp_commands.start_planting import activate_planting
-from esp_commands.start_planting import monitor_planting_progress
 @interface_blueprint.route('/api/start_planting', methods=['POST'])
 def start_planting():
     activate_planting()
@@ -193,10 +194,9 @@ def start_planting():
 def confirm_planting():
     post_data = request.get_json()
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
-       machine_info = json.load(json_file)
+        machine_info = json.load(json_file)
 
-       post_data['machineId'] = machine_info.get('id')
-
+        post_data['machineId'] = machine_info.get('id')
 
     sensor_info = get_sensor_data()
     data = {
@@ -205,22 +205,23 @@ def confirm_planting():
     }
 
     response = requests.post('%s/api/start_planting' %
-                            os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+                             os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
 
     response_json = response.json()
     machine_info['plantingActive'] = True
     machine_info['plantingId'] = response_json.get('plantingId')
 
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
-       json.dump(machine_info, json_file)
+        json.dump(machine_info, json_file)
 
     return jsonify({'success': True}), 201
 
-from esp_commands.start_planting import stop_planting
+
 @interface_blueprint.route('/api/cancel_planting')
 def cancel_planting():
     stop_planting()
     return jsonify({'success': True}), 201
+
 
 @interface_blueprint.route('/api/end_planting')
 def end_planting():
@@ -240,8 +241,7 @@ def end_planting():
 
     return jsonify({'success': True}), 201
 
-import subprocess
-import time
+
 @interface_blueprint.route('/app/wifi', methods=['GET', 'POST'])
 def see_networks():
     error = False
@@ -255,6 +255,7 @@ def see_networks():
 
     return render_template('wifi.html', networks=networks, error=error, form=None)
 
+
 @interface_blueprint.route('/api/connect', methods=['POST'])
 def connect_to_wifi():
     post_data = request.get_json()
@@ -266,7 +267,6 @@ def connect_to_wifi():
 
     print(post_data['password'])
     print(post_data['ssid'])
-
 
     subprocess.call([connect_path, post_data['password'], post_data['ssid']])
 

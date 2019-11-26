@@ -24,6 +24,13 @@ body {
   padding: 15px;
 }
 
+.error-container img {
+  display: flex;
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 10px auto;
+}
+
 .pincode {
   background-color: #424c59;
   height: 45px;
@@ -38,4 +45,28 @@ body {
 
 h3 {
   text-align: center;
+}
+
+select {
+  margin-bottom: 10px;
+}
+
+.warn-planting {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.btn-start {
+  background-color: #424c59;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  height: 45px;
+  width: 200px;
+  border-radius: 30px;
+  border: none;
+}
+
+.btn-canceled, .btn-cancel {
+  margin-top: 60px;
 }

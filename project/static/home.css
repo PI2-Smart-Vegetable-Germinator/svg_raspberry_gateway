@@ -1,9 +1,132 @@
 html {
   margin: 0;
+  box-sizing: border-box;
 }
 
 body {
   background-color: #87b950;
   margin: 0;
   font-family: 'Montserrat', sans-serif;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 5px;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
+  width: 480px;
+  height: 320px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.card {
+  background-color: white;
+  margin: 10px 15px;
+  width: 190px;
+  height: 100px;
+  padding: 5px 10px;
+  vertical-align: middle;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.btn-card {
+  background-color: white;
+  margin: 10px 15px;
+  width: 190px;
+  height: 100px;
+  padding: 5px 10px;
+  vertical-align: middle;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-card button {
+  color: #87b950;
+  background-color: transparent;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 1px solid #87b950;
+  border-radius: 20px;
+}
+
+.btn-card-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.btn-card-info--light {
+  height: 69px;
+}
+
+.card img, .btn-card img {
+  height: 40px;
+}
+
+.card div, .btn-card-info div {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.card div h2, h4, h6, .btn-card div h2, h4, h6 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+
+h3 {
+  width: 200px;
+  text-align: center;
+}
+
+.irrigation-info {
+  width: 320px;
+  height: 150px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: flex;
+  background-color: white;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.btn-start {
+  align-self: flex-end;
+  margin-right: 15px;
+  background-color: #424c59;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 200px;
+  margin: 5px 15px;
+  height: 35px;
+  border-radius: 30px;
+  border: none;
+}
+
+
+.buttons-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

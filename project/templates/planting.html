@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='shared.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='pairing.css') }}">
+  <title>Document</title>
+</head>
+
+<body>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+    integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf-8">
+    let wasCanceled = false;
+
+    var socket = io();
+    socket.on('connect', function () {
+      console.log('connect');
+      socket.emit('my event', { data: 'I\'m connected!' });
+    });
+    socket.on('erroPresenca', function () {
+      console.log('deu ruim broder');
+      const waitingSection = document.getElementById('planting-waiting');
+      const errorSection = document.getElementById('planting-error');
+      waitingSection.style.display = "none";
+      errorSection.style.display = "flex";
+    });
+    socket.on('plantingSuccess', function () {
+      if (!wasCanceled) {
+        const waitingSection = document.getElementById('planting-waiting');
+        const successSection = document.getElementById('planting-success');
+        waitingSection.style.display = "none";
+        successSection.style.display = "flex";
+      } else {
+        const waitingSection = document.getElementById('canceled-waiting');
+        const successSection = document.getElementById('planting-canceled');
+        waitingSection.style.display = "none";
+        successSection.style.display = "flex";
+      }
+    });
+
+    function toggleTooltip() {
+      const firstSection = document.getElementById('planting-first-notice');
+      const secondSection = document.getElementById('planting-second-notice');
+      firstSection.style.display = "none";
+      secondSection.style.display = "flex";
+    }
+
+    function startPlanting() {
+      const dropdown = document.getElementById('seedlings');
+      const selectedOption = dropdown.options[dropdown.selectedIndex];
+      fetch('http://localhost:5005/api/start_planting', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "seedlingId": selectedOption.value })
+      }).then((response) => {
+        const secondSection = document.getElementById('planting-second-notice');
+        const waitingSection = document.getElementById('planting-waiting');
+        secondSection.style.display = "none";
+        waitingSection.style.display = "flex";
+      });
+    }
+
+    function cancelPlanting() {
+      wasCanceled = true;
+      fetch('http://localhost:5005/api/cancel_planting', {
+        method: 'get',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then((response) => {
+        const waitingSection = document.getElementById('planting-waiting');
+        waitingSection.style.display = "none";
+        const canceledSection = document.getElementById('canceled-waiting');
+        canceledSection.style.display = "flex";
+      })
+    }
+
+    function confirmPlanting() {
+      const dropdown = document.getElementById('seedlings');
+      const selectedOption = dropdown.options[dropdown.selectedIndex];
+
+      fetch('http://localhost:5005/api/confirm_planting', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "seedlingId": selectedOption.value })
+      }).then((response) => {
+        window.location.href = '{{ url_for( 'interface.home' ) }}';
+      }).catch((err) => {
+
+      });
+    }
+
+    function goToHomepage() {
+      window.location.href = '{{ url_for( 'interface.home' ) }}';
+    }
+  </script>
+
+  <section class="container" id="planting-first-notice">
+    <h3>Você não possui um plantio ativo no momento. Deseja iniciar um novo plantio?</h3>
+    <button type="button" class="btn-start" onclick="toggleTooltip()">
+      Iniciar Plantio
+    </button>
+  </section>
+
+  <section class="container" id="planting-second-notice" style="display: none;">
+    <h3 class="warn-planting">Certifique-se de que as sementes e a terra estão posicionadas de forma correta na máquina
+      antes de começar.</h3>
+    <div class="select-area">
+      <label for="seedlings">Semente escolhida:</label>
+      <select name="seedlings" id="seedlings">
+        {% for seedling in seedlings %}
+        <option value="{{ seedling.id }}">{{ seedling.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="button" class="btn-start" onclick="startPlanting()">
+      Iniciar Plantio
+    </button>
+  </section>
+
+  <section class="container" id="planting-error" style="display: none;">
+    <div class="error-container">
+      <img src="{{ url_for('static', filename='warning.png') }}" alt="warning">
+      <h3 class="warn-planting">Sementeira mal posicionada ou não colocada. Por favor, posicione a sementeira
+        corretamente.</h3>
+    </div>
+    <button type="button" class="btn-start" onclick="startPlanting()">
+      Iniciar Plantio
+    </button>
+  </section>
+
+  <section class="container" id="planting-waiting" style="display: none;">
+    <h3 class="warn-planting">Plantio iniciado. Por favor, aguarde...</h3>
+    <button class="btn-start btn-cancel" onclick="cancelPlanting()">
+      Cancelar
+    </button>
+  </section>
+
+  <section class="container" id="canceled-waiting" style="display: none;">
+    <h3 class="warn-planting">Cancelando o plantio...</h3>
+  </section>
+
+  <section class="container" id="planting-canceled" style="display: none;">
+    <h3 class="warn-planting">Plantio cancelado com sucesso!</h3>
+    <button class="btn-start btn-canceled" onclick="goToHomepage()">
+      Voltar
+    </button>
+  </section>
+
+  <section class="container" id="planting-success" style="display: none;">
+    <h3>Plantio realizado com sucesso!</h3>
+    <button type="button" class="btn-start" onclick="confirmPlanting()">
+      Ir para home
+    </button>
+  </section>
+</body>
+
+</html>

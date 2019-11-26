@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='shared.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='keyboard/css/index.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='wifi.css') }}">
+  <title>Document</title>
+</head>
+
+<body>
+  <script src="{{ url_for('static', filename='keyboard/index.js')}}"></script>
+  <script>
+    function refresh() {
+      window.location.reload(true);
+    }
+    function attemptConnection() {
+      const ssid = document.getElementById('inputSsid');
+      const password = document.getElementById('inputPassword');
+      const loadingSpan = document.getElementById('loadingSpan');
+
+      loadingSpan.style.display = "inline";
+
+      fetch('http://localhost:5005/api/connect', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "ssid": ssid.value, "password": password.value })
+      }).then((response) => {
+        console.log(response.status)
+        if (response.status != 201) {
+          loadingSpan.style.display = "none";
+
+          const sectionToShow = document.getElementById('networks');
+          const sectionToHide = document.getElementById('passwordKeyboard');
+          const promptLabel = document.getElementById('promptLabel');
+
+          promptLabel.innerHTML = "Houve um erro ao tentar conectar à rede. Por favor, tente novamente.";
+          sectionToShow.style.display = "block";
+          sectionToHide.style.display = "none";
+        } else {
+          window.location.href = '{{ url_for( 'interface.home' ) }}';
+        }
+      }).catch((err) => {
+        loadingSpan.style.display = "none";
+      });
+    }
+  </script>
+  <section class="container" id="networks">
+    <div class="labels">
+      <h4 id="promptLabel">Por favor, conecte-se a uma rede Wifi antes de começar a usar o sistema.</h4>
+
+      <div class="refresh-area">
+        <h5>Redes disponíveis:</h5>
+        <img src="{{ url_for('static', filename='refresh.png') }}" alt="refresh" onclick="refresh();">
+      </div>
+    </div>
+    <ul>
+      {% for cell in networks %}
+      <div class="cell-info">
+        <li>{{cell}}</li>
+        <button onclick="typePassword('{{ cell }}')" class="connect-button">Conectar</button>
+      </div>
+      {% endfor %}
+    </ul>
+  </section>
+  <section class="container" style="display: none;" id="passwordKeyboard">
+    <h4 id="passwordLabel" class="labels"></h4>
+    <div class="content">
+      <div class="cell-info">
+          <input id="inputSsid" type="hidden" name="ssid">
+          <input id="inputPassword" type="text" class="input" name="password">
+          <span id="loadingSpan" style="display: none;">Conectando...</span>
+          <button type="button" class="connect-button" onclick="attemptConnection();">Confirmar</button>
+        </form>
+      </div>
+      <div class="simple-keyboard"></div>
+    </div>
+  </section>
+  <script>
+    let chosenCell = null;
+    function typePassword(cell) {
+      chosenCell = cell;
+      const sectionToHide = document.getElementById('networks');
+      const sectionToShow = document.getElementById('passwordKeyboard');
+      const passwordLabel = document.getElementById('passwordLabel');
+      const inputSsid = document.getElementById('inputSsid');
+      passwordLabel.textContent = "Digite a senha para a rede " + chosenCell + ":";
+      sectionToHide.style.display = "none";
+      sectionToShow.style.display = "block";
+      inputSsid.value = chosenCell;
+    }
+  </script>
+  <script>
+    let Keyboard = window.SimpleKeyboard.default;
+
+    let myKey = new Keyboard({
+      onChange: input => onChange(input),
+      onKeyPress: button => onKeyPress(button)
+    });
+
+    function onChange(input) {
+      document.querySelector(".input").value = input;
+    }
+
+    function onKeyPress(button) {
+      if (button === "{shift}" || button === "{lock}") handleShift();
+    }
+    function handleShift() {
+      let currentLayout = myKey.options.layoutName;
+      let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+      myKey.setOptions({
+        layoutName: shiftToggle
+      });
+    }
+  </script>
+</body>
+
+</html>

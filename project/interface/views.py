@@ -27,10 +27,12 @@ def pair_device():
     pin = randrange(9999)
     data = {'pincode': ('%04d' % pin)}
     plantingActive = None
+    plantingId = None
 
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
         plantingActive = machine_info.get('plantingActive')
+        plantingId = machine_info.get('plantingId')
 
         if machine_info.get('id'):
             data['id'] = machine_info.get('id')
@@ -46,6 +48,7 @@ def pair_device():
         with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
             existing_info = {}
             existing_info['plantingActive'] = plantingActive
+            existing_info['plantingId'] = plantingId 
             existing_info['id'] = response.json()['machineId']
             json.dump(existing_info, json_file)
 

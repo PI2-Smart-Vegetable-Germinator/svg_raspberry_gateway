@@ -86,7 +86,9 @@ def home():
     sensor_info = get_sensor_data()
     data = {
         'currentTemperature': sensor_info['TemperaturaAr'],
-        'currentHumidity': sensor_info['UmidadeSolo'],
+        'currentHumidity': sensor_info['UmidadeSolo'], 
+        'currentAirHumidity': sensor_info['UmidadeAr']
+        # Luximetro
     }
 
     return render_template('home.html', data=data)
@@ -202,6 +204,7 @@ def confirm_planting():
     data = {
         'currentTemperature': sensor_info['TemperaturaAr'],
         'currentHumidity': sensor_info['UmidadeSolo'],
+        'currentAirHumidity': sensor_info['UmidadeAr']
     }
 
     response = requests.post('%s/api/start_planting' %

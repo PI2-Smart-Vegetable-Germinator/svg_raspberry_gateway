@@ -113,28 +113,10 @@ def confirm_pairing():
 
 @interface_blueprint.route('/api/start_irrigation')
 def start_irrigation():
-    data = {}
-    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
-        machine_info = json.load(json_file)
-
-        data['plantingId'] = machine_info.get('plantingId')
-
-    try:
-        response = requests.post('%s/api/start_irrigation' %
-                                 os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
-    except RequestException as e:
-        print(str(e))
-
     t = Thread(target=start_irrigation)
     t.start()
 
     return jsonify({'success': True}), 200
-
-
-@interface_blueprint.route('/api/app/end_irrigation')
-def app_end_irrigation():
-
-    return jsonify({'success': True, 'app_end_irrigation': 'testinho-fim'}), 200
 
 
 # SECTION ILLUMINATION --------------------------------------------------

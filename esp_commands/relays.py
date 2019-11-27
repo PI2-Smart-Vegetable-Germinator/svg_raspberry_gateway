@@ -32,16 +32,24 @@ def switch_illumination ():
     return get_illumination_state()
 
 def start_irrigation():
+    data = {}
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+        data['plantingId'] = machine_info.get('plantingId')
+
+    try:
+        response = requests.post('%s/api/start_irrigation' %
+                                 os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    except RequestException as e:
+        print(str(e))
+
     #GPIO.output(irrigation, 1)
     print('irrigar')
     time.sleep(irrigation_time)
     #GPIO.output(irrigation, 0)
 
     socketio.emit('irrigationFinished', {'success': True})
-
-
-    with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
-        machine_info = json.load(json_file)
 
     machine_info['latestIrrigation'] = str(datetime.now())
 

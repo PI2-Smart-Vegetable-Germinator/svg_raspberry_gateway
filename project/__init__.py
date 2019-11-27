@@ -8,7 +8,7 @@ from flask import render_template, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
-
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 
@@ -33,6 +33,7 @@ app.register_blueprint(image_blueprint)
 app.register_blueprint(interface_blueprint)
 
 from esp_commands.sensor_data import get_sensor_data
+from esp_commands.relays import start_irrigation
 
 def get_updated_info():
     sensor_info = get_sensor_data()
@@ -42,13 +43,25 @@ def get_updated_info():
         'currentAirHumidity': sensor_info.get('UmidadeAr'),
     }
     print(data)
-    
     requests.post('http://localhost:5005/update_info', json=data)
 
+def check_humidity(humidity):
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+    
+    if(machine_info.get('smartIrrigationEnabled')):
+        if humidity < 70:
+            latest_irrigation = machine_info.get('latestIrrigation')
+            delta = datetime.now() - datetime.strptime(latest_irrigation, "%Y-%m-%d %H:%M:%S.%f")
+            # checks if the latest irrigation has more than 5 minutes
+            if(delta > 5*60):
+                start_irrigation()
+                # TODO send notification
 
 @app.route('/update_info', methods=['POST'])
 def update_info():
     post_data = request.get_json()
+    check_humidity(post_data.get('currentHumidity'))
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
         post_data['plantingId'] = machine_info['plantingId']

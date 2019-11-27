@@ -25,6 +25,9 @@
 
       let humidityLabel = document.getElementById('humidity');
       humidityLabel.textContent = data.currentHumidity + '%';
+
+      let illuminationLabel = document.getElementById('light-time');
+      illuminationLabel.textContent = data.illuminationTime;
     });
     socket.on('irrigationFinished', function () {
       document.getElementById('irrigation-label').textContent = 'Irrigação concluída!';
@@ -69,7 +72,7 @@
           <img src="{{ url_for('static', filename='sunny.png') }}" alt="sunny">
           <div>
             <h6>Tempo de exposição à luz</h6>
-            <h2 id="light-time">3h 22m</h2>
+            <h2 id="light-time">{{ data.illuminationTime }}</h2>
           </div>
         </div>
         <button>Alternar Iluminação</button>

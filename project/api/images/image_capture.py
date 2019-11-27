@@ -18,6 +18,7 @@ class ImageCapture:
         time.sleep(5)
         camera.capture(image_file)
         image_file.close()
+        camera.close()
 
         if os.path.exists('./project/api/images/assets/photo.jpg'):
             return True

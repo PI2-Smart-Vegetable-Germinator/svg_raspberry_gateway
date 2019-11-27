@@ -4,6 +4,8 @@ import time
 import json
 import esp_commands.relays as relays
 from datetime import datetime
+import os
+from datetime import timedelta
 
 
 def get_sensor_data():
@@ -35,3 +37,33 @@ def get_sensor_data():
     j['currentBacklit'] = relays.get_illumination_state()
     return j
 
+def check_illumination(illumination):
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+    if illumination > 2000 and machine_info.get('illuminated'):
+        last_updated = machine_info.get('lastUpdated')
+        if not last_updated:
+            last_updated = str(datetime.now())
+        delta = datetime.now() - datetime.strptime(last_updated, "%Y-%m-%d %H:%M:%S.%f")
+        
+        if not machine_info.get('illuminationTime'):
+            machine_info['illuminationTime'] = delta.seconds
+        else:
+            machine_info['illuminationTime'] = int(machine_info['illuminationTime']) + delta.seconds
+        
+        with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
+            json.dump(machine_info, json_file)
+    elif illumination > 2000:
+        machine_info['illuminated'] = True
+        with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
+            json.dump(machine_info, json_file)
+    else:
+        machine_info['illuminated'] = False
+        with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
+            json.dump(machine_info, json_file)
+    
+    timestring = str(timedelta(seconds=machine_info['illuminationTime']))
+    timestring_tokens = timestring.split(':')
+    formatted_timestring = "%sh %sm" % (timestring_tokens[0], timestring_tokens[1])
+    return formatted_timestring

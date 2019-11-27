@@ -1,4 +1,4 @@
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 from datetime import datetime, timedelta
 import os, json, requests
@@ -10,24 +10,20 @@ illumination = 12
 irrigation = 16
 irrigation_time = 10
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(illumination, GPIO.OUT)
-# GPIO.setup(irrigation, GPIO.OUT)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(illumination, GPIO.OUT)
+GPIO.setup(irrigation, GPIO.OUT)
 
 def get_illumination_state():
-    # return GPIO.input(illumination)
-    return 0
+    return GPIO.input(illumination)
 
 def switch_illumination ():
     if(get_illumination_state() == 0):
-        # GPIO.output(illumination, 1)
+        GPIO.output(illumination, 1)
         print('acionar iluminação')
-        return 1
     else:
-        # GPIO.output(illumination, 0)
+        GPIO.output(illumination, 0)
         print('desligar iluminação')
-        return 0
-
 
     return get_illumination_state()
 
@@ -44,10 +40,10 @@ def start_irrigation():
     except RequestException as e:
         print(str(e))
 
-    #GPIO.output(irrigation, 1)
+    GPIO.output(irrigation, 1)
     print('irrigar')
     time.sleep(irrigation_time)
-    #GPIO.output(irrigation, 0)
+    GPIO.output(irrigation, 0)
 
     socketio.emit('irrigationFinished', {'success': True})
 

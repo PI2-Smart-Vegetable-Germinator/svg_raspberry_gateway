@@ -9,6 +9,7 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
 from datetime import datetime
+from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
 
@@ -33,6 +34,7 @@ app.register_blueprint(image_blueprint)
 app.register_blueprint(interface_blueprint)
 
 from esp_commands.sensor_data import get_sensor_data
+from esp_commands.sensor_data import check_illumination
 from esp_commands.relays import start_irrigation
 
 def get_updated_info():
@@ -41,7 +43,16 @@ def get_updated_info():
         'currentTemperature': sensor_info.get('TemperaturaAr'),
         'currentHumidity': sensor_info.get('UmidadeSolo'),
         'currentAirHumidity': sensor_info.get('UmidadeAr'),
+        'luxValue': sensor_info.get('Luximetro'),
     }
+
+    # data = {
+    #     'currentTemperature': 45,
+    #     'currentHumidity': 10,
+    #     'currentAirHumidity': 10,
+    #     'luxValue': 5000,
+    # }
+
     print(data)
     requests.post('http://localhost:5005/update_info', json=data)
 
@@ -54,24 +65,30 @@ def check_humidity(humidity):
             latest_irrigation = machine_info.get('latestIrrigation')
             delta = datetime.now() - datetime.strptime(latest_irrigation, "%Y-%m-%d %H:%M:%S.%f")
             # checks if the latest irrigation has more than 5 minutes
-            if(delta > 5*60):
+            if(delta.seconds > 5*60):
                 start_irrigation()
                 # TODO send notification
+
 
 @app.route('/update_info', methods=['POST'])
 def update_info():
     post_data = request.get_json()
     check_humidity(post_data.get('currentHumidity'))
+    illumination_time = check_illumination(post_data.get('luxValue'))
+    post_data['illuminationTime'] = illumination_time
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
         post_data['plantingId'] = machine_info['plantingId']
-    socketio.emit('infoUpdated', request.get_json())
+        machine_info['lastUpdated'] = str(datetime.now())
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
+        json.dump(machine_info, json_file)
+    socketio.emit('infoUpdated', post_data)
     requests.post('%s/api/update_planting_info' % os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
     return jsonify({'success': True}), 201
 
 
 cron = BackgroundScheduler()
-cron.add_job(get_updated_info, 'interval', minutes=15)
+cron.add_job(get_updated_info, 'interval', seconds=15)
 cron.start()
 
 if not os.path.exists('/etc/wpa_supplicant/wpa_supplicant.conf.backup'):

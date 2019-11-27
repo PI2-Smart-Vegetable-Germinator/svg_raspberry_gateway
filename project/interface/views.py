@@ -6,6 +6,7 @@ import time
 from threading import Thread
 import serial
 from esp_commands.sensor_data import get_sensor_data
+from esp_commands.sensor_data import check_illumination
 from flask import Blueprint
 from flask import jsonify
 from flask import redirect
@@ -95,9 +96,18 @@ def home():
             'currentTemperature': str(sensor_info.get('TemperaturaAr')),
             'currentHumidity': str(sensor_info.get('UmidadeSolo')),
             'currentAirHumidity': str(sensor_info.get('UmidadeAr')),
+            'illuminationTime': check_illumination(sensor_info.get('Luximetro'))
             'hasWifi': has_wifi
-            # Luximetro
         }
+
+        # data = {
+        #     'currentTemperature': str(45),
+        #     'currentHumidity': str(10),
+        #     'currentAirHumidity': str(15),
+        #     'illuminationTime': check_illumination(5000),
+        #     'hasWifi': has_wifi
+        #     # Luximetro
+        # }
 
         return render_template('home.html', data=data)
 

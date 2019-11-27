@@ -46,12 +46,12 @@ def start_irrigation():
     machine_info['latestIrrigation'] = str(datetime.now())
 
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
-        json.dump(json_file, machine_info)
+        json.dump(machine_info, json_file)
 
     try:
         response = requests.post('%s/api/end_irrigation' %
                                  os.getenv('EXTERNAL_GATEWAY_URL'), json={"plantingId" : machine_info.get('plantingId')})
     except RequestException as e:
         print(str(e))
-    return 1
+    
     

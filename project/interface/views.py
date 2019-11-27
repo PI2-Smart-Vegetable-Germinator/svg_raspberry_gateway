@@ -92,9 +92,9 @@ def home():
 
         sensor_info = get_sensor_data()
         data = {
-            'currentTemperature': sensor_info.get('TemperaturaAr'),
-            'currentHumidity': sensor_info.get('UmidadeSolo'),
-            'currentAirHumidity': sensor_info.get('UmidadeAr'),
+            'currentTemperature': str(sensor_info.get('TemperaturaAr')),
+            'currentHumidity': str(sensor_info.get('UmidadeSolo')),
+            'currentAirHumidity': str(sensor_info.get('UmidadeAr')),
             'hasWifi': has_wifi
             # Luximetro
         }
@@ -111,8 +111,10 @@ def confirm_pairing():
 
 # SECTION IRRIGATION --------------------------------------------------
 
+from esp_commands.relays import start_irrigation
+
 @interface_blueprint.route('/api/start_irrigation')
-def start_irrigation():
+def activate_irrigation():
     data = {}
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)

@@ -8,7 +8,7 @@ from esp_commands.sensor_data import get_sensor_data
 
 def check_connection():
     try:
-        urllib.request.urlopen('http://google.com', timeout=1)
+        urllib.request.urlopen('http://google.com', timeout=5)
     except urllib.error.URLError as err:
         return False
 

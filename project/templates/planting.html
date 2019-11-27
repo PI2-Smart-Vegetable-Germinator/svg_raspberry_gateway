@@ -112,6 +112,11 @@
     <button type="button" class="btn-start" onclick="toggleTooltip()">
       Iniciar Plantio
     </button>
+    {% if not hasWifi %}
+    <a style="text-decoration: none; color: black; margin-top: 15px;"
+      href="{{ url_for( 'interface.see_networks' ) }}">Conectar à
+      Internet</a>
+    {% endif %}
   </section>
 
   <section class="container" id="planting-second-notice" style="display: none;">

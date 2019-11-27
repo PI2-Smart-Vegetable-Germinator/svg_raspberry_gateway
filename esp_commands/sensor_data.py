@@ -11,6 +11,7 @@ def get_sensor_data():
     except serial.SerialException as e:
         print("deu ruim")
         print(str(e))
+        return {}
 
     comunicacaoSerial.write(b'sensores')
     

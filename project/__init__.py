@@ -36,8 +36,9 @@ app.register_blueprint(interface_blueprint)
 def get_updated_info():
     sensor_info = get_sensor_data()
     data = {
-        'currentTemperature': sensor_info['TemperaturaAr'],
-        'currentHumidity': sensor_info['UmidadeSolo'],
+        'currentTemperature': sensor_info.get('TemperaturaAr'),
+        'currentHumidity': sensor_info.get('UmidadeSolo'),
+        'currentAirHumidity': sensor_info.get('UmidadeAr'),
     }
     print(data)
     

@@ -49,6 +49,14 @@
           window.location.href = '{{ url_for( 'interface.home' ) }}';
         });
     }
+
+    function pairDevice() {
+      window.location.href = '{{ url_for( 'interface.pair_device' ) }}';
+    }
+
+    function connectToNetwork() {
+      window.location.href = '{{ url_for( 'interface.see_networks' ) }}';
+    }
   </script>
   <section class="container" id="dashboard">
     <div class="cards">
@@ -80,12 +88,17 @@
         <button onclick="startIrrigation();" type="button">Irrigar agora</button>
       </div>
       <div class="buttons-wrapper">
-        <button type="button" class="btn-start btn-pairing">
+        <button onclick="pairDevice()" type="button" class="btn-start btn-pairing">
           Parear Dispositivo
         </button>
         <button onclick="endCycle();" type="button" class="btn-start btn-pairing">
           Encerrar Ciclo
         </button>
+        {% if not data.hasWifi %}
+        <button onclick="connectToNetwork()" type="button" class="btn-start btn-pairing">
+          Conectar à Internet
+        </button>
+        {% endif %}
       </div>
     </div>
   </section>

@@ -13,11 +13,13 @@ from flask import render_template
 from flask import request
 from flask import url_for
 import requests
+from requests.exceptions import RequestException
 import os
 import json
 from wifi import Cell, Scheme
 
 from .utils import check_connection
+from .utils import refresh_data
 from project import socketio
 
 import esp_commands.relays as relays
@@ -26,6 +28,10 @@ from random import randrange
 
 interface_blueprint = Blueprint("interface", __name__)
 
+
+@interface_blueprint.route('/api/ping')
+def ping():
+    return jsonify({'response': 'pong!'}), 200
 
 @interface_blueprint.route('/app/start')
 def start_system():
@@ -58,7 +64,7 @@ def pair_device():
         with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
             existing_info = {}
             existing_info['plantingActive'] = plantingActive
-            existing_info['plantingId'] = plantingId 
+            existing_info['plantingId'] = plantingId
             existing_info['id'] = response.json()['machineId']
             json.dump(existing_info, json_file)
 
@@ -67,31 +73,34 @@ def pair_device():
 
 @interface_blueprint.route('/app/home')
 def home():
-    if not check_connection():
-        return redirect('wifi')
-
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'r+') as json_file:
         machine_info = json.load(json_file)
 
+        has_wifi = check_connection()
+
         if not machine_info.get('id'):
-            return redirect('pairing')
+            if has_wifi:
+                return redirect('pairing')
+            return redirect('wifi')
 
         if not machine_info.get('plantingActive'):
             seedlings_file = open(os.path.dirname(
                 __file__) + '/../../assets/seedlings.json')
             seedlings_data = json.load(seedlings_file)
             seedlings_file.close()
-            return render_template('planting.html', seedlings=seedlings_data['seedlings'])
+            return render_template('planting.html', seedlings=seedlings_data['seedlings'], hasWifi=has_wifi)
 
-    sensor_info = get_sensor_data()
-    data = {
-        'currentTemperature': sensor_info['TemperaturaAr'],
-        'currentHumidity': sensor_info['UmidadeSolo'], 
-        'currentAirHumidity': sensor_info['UmidadeAr']
-        # Luximetro
-    }
+        sensor_info = get_sensor_data()
+        data = {
+            'currentTemperature': sensor_info.get('TemperaturaAr'),
+            'currentHumidity': sensor_info.get('UmidadeSolo'),
+            'currentAirHumidity': sensor_info.get('UmidadeAr'),
+            'hasWifi': has_wifi
+            # Luximetro
+        }
 
-    return render_template('home.html', data=data)
+        return render_template('home.html', data=data)
+
 
 
 @interface_blueprint.route('/api/confirm_pairing')
@@ -110,8 +119,11 @@ def start_irrigation():
 
         data['plantingId'] = machine_info.get('plantingId')
 
-    response = requests.post('%s/api/start_irrigation' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    try:
+        response = requests.post('%s/api/start_irrigation' %
+                                 os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    except RequestException as e:
+        print(str(e))
 
     return jsonify({'success': True}), 200
 
@@ -130,8 +142,11 @@ def end_irrigation():
 
         data['plantingId'] = machine_info.get('plantingId')
 
-    response = requests.post('%s/api/end_irrigation' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    try:
+        response = requests.post('%s/api/end_irrigation' %
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    except RequestException as e:
+        print(str(e))
 
     return jsonify({'success': True}), 200
 
@@ -159,8 +174,11 @@ def switch_illumination():
     else:
         data['currently_backlit'] = "False"
 
-    response = requests.post('%s/api/switch_illumination' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    try:
+        response = requests.post('%s/api/switch_illumination' %
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    except RequestException as e:
+        print(str(e))
 
     return jsonify(response.json()), response.status_code
 
@@ -201,18 +219,24 @@ def confirm_planting():
         post_data['machineId'] = machine_info.get('id')
 
     sensor_info = get_sensor_data()
-    data = {
-        'currentTemperature': sensor_info['TemperaturaAr'],
-        'currentHumidity': sensor_info['UmidadeSolo'],
-        'currentAirHumidity': sensor_info['UmidadeAr']
-    }
 
-    response = requests.post('%s/api/start_planting' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+    post_data['currentTemperature'] = sensor_info.get('TemperaturaAr')
+    post_data['currentHumidity'] = sensor_info.get('UmidadeSolo')
+    post_data['currentAirHumidity'] = sensor_info.get('UmidadeAr')
 
-    response_json = response.json()
-    machine_info['plantingActive'] = True
-    machine_info['plantingId'] = response_json.get('plantingId')
+    try:
+        response = requests.post('%s/api/start_planting' %
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+
+        response_json = response.json()
+        machine_info['plantingActive'] = True
+        machine_info['seedlingId'] = post_data['seedlingId']
+        machine_info['plantingId'] = response_json.get('plantingId')
+    except RequestException:
+        machine_info['plantingActive'] = True
+        machine_info['seedlingId'] = post_data['seedlingId']
+        machine_info['plantingId'] = None
+
 
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
         json.dump(machine_info, json_file)
@@ -234,10 +258,18 @@ def end_planting():
 
         post_data['plantingId'] = machine_info.get('plantingId')
 
-    response = requests.post('%s/api/end_planting' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
-    machine_info['plantingActive'] = False
-    machine_info['plantingId'] = None
+    try:
+        response = requests.post('%s/api/end_planting' %
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+        machine_info['plantingActive'] = False
+        machine_info['plantingId'] = None
+    except RequestException:
+        machine_info['plantingActive'] = False
+        if not machine_info.get('finishedCycles'):
+            machine_info['finishedCycles'] = [machine_info.get('plantingId')]
+        else:
+            machine_info['finishedCycles'].append(machine_info.get('plantingId'))
+        machine_info['plantingId'] = None
 
     with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
         json.dump(machine_info, json_file)
@@ -276,6 +308,7 @@ def connect_to_wifi():
     for i in range(0, 4):
         time.sleep(5)
         if check_connection():
+            refresh_data()
             return jsonify({
                 'success': True
             }), 201

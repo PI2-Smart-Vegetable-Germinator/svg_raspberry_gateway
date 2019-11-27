@@ -8,7 +8,6 @@ from flask import render_template, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
-from esp_commands.sensor_data import get_sensor_data
 
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests
@@ -32,6 +31,8 @@ from project.api.images.views import image_blueprint
 from project.interface.views import interface_blueprint
 app.register_blueprint(image_blueprint)
 app.register_blueprint(interface_blueprint)
+
+from esp_commands.sensor_data import get_sensor_data
 
 def get_updated_info():
     sensor_info = get_sensor_data()

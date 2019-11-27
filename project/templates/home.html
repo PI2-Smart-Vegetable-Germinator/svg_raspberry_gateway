@@ -26,6 +26,11 @@
       let humidityLabel = document.getElementById('humidity');
       humidityLabel.textContent = data.currentHumidity + '%';
     });
+    socket.on('irrigationFinished', function () {
+      document.getElementById('irrigation-label').textContent = 'Irrigação concluída!';
+      document.getElementById('irrigation').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+    });
   </script>
   <script type="text/javascript" charset="utf-8">
     function startIrrigation() {
@@ -33,14 +38,6 @@
       document.getElementById('dashboard').style.display = 'none';
       document.getElementById('irrigation').style.display = 'flex';
       fetch('http://localhost:5005/api/start_irrigation');
-      setTimeout(() => {
-        document.getElementById('irrigation-label').textContent = 'Irrigação concluída!';
-        setTimeout(() => {
-          document.getElementById('irrigation').style.display = 'none';
-          document.getElementById('dashboard').style.display = 'flex';
-          fetch('http://localhost:5005/api/end_irrigation');
-        }, 2000)
-      }, 10000);
     }
 
     function endCycle() {

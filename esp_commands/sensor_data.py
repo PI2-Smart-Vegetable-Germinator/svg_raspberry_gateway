@@ -3,6 +3,7 @@ import serial
 import time
 import json
 import esp_commands.relays as relays
+from datetime import datetime
 
 
 def get_sensor_data():
@@ -31,7 +32,6 @@ def get_sensor_data():
     s += comunicacaoSerial.readline().decode('UTF-8')
 
     j = json.loads(s)
-    j['currently_backlit'] = relays.get_illumination_state()
-    print(j)
+    j['currentBacklit'] = relays.get_illumination_state()
     return j
 

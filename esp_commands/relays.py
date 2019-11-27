@@ -1,9 +1,14 @@
-# import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import time
+from datetime import datetime, timedelta
+import os, json, requests
+from requests.exceptions import RequestException
+
+from project import socketio
 
 illumination = 12
 irrigation = 16
-irrigation_time = 15
+irrigation_time = 10
 
 # GPIO.setmode(GPIO.BCM)
 # GPIO.setup(illumination, GPIO.OUT)
@@ -27,12 +32,26 @@ def switch_illumination ():
     return get_illumination_state()
 
 def start_irrigation():
-    # GPIO.output(irrigation, 1)
+    #GPIO.output(irrigation, 1)
     print('irrigar')
-    return 1
+    time.sleep(irrigation_time)
+    #GPIO.output(irrigation, 0)
 
-def end_irrigation():
-    # GPIO.output(irrigation, 0)
-    print('parar irrigação')
+    socketio.emit('irrigationFinished', {'success': True})
+
+
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+
+    machine_info['latestIrrigation'] = str(datetime.now())
+
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
+        json.dump(json_file, machine_info)
+
+    try:
+        response = requests.post('%s/api/end_irrigation' %
+                                 os.getenv('EXTERNAL_GATEWAY_URL'), json={"plantingId" : machine_info.get('plantingId')})
+    except RequestException as e:
+        print(str(e))
     return 1
     

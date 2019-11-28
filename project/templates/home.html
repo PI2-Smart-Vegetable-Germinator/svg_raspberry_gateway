@@ -54,6 +54,10 @@
       window.location.href = '{{ url_for( 'interface.pair_device' ) }}';
     }
 
+    function toggleIllumination() {
+      fetch('http://localhost:5005/api/switch_illumination')
+    }
+
     function connectToNetwork() {
       window.location.href = '{{ url_for( 'interface.see_networks' ) }}';
     }
@@ -75,7 +79,7 @@
             <h2 id="light-time">{{ data.illuminationTime }}</h2>
           </div>
         </div>
-        <button>Alternar Iluminação</button>
+        <button onclick="toggleIllumination();">Alternar Iluminação</button>
       </div>
       <div class="btn-card">
         <div class="btn-card-info">

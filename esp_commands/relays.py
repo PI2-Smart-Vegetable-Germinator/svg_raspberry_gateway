@@ -6,8 +6,8 @@ from requests.exceptions import RequestException
 
 from project import socketio
 
-illumination = 12
-irrigation = 16
+illumination = 6
+irrigation = 13
 irrigation_time = 10
 
 GPIO.setmode(GPIO.BCM)

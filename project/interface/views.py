@@ -99,10 +99,10 @@ def home():
 
         sensor_info = get_sensor_data()
         data = {
-            'currentTemperature': str(sensor_info.get('TemperaturaAr')),
-            'currentHumidity': str(sensor_info.get('UmidadeSolo')),
-            'currentAirHumidity': str(sensor_info.get('UmidadeAr')),
-            'illuminationTime': check_illumination(sensor_info.get('Luximetro')),
+            'currentTemperature': str(sensor_info.get('TemperaturaAr')) if sensor_info.get('TemperaturaAr') else '-',
+            'currentHumidity': str(sensor_info.get('UmidadeSolo')) if sensor_info.get('UmidadeSolo') else '-',
+            'currentAirHumidity': str(sensor_info.get('UmidadeAr')) if sensor_info.get('UmidadeAr') else '-',
+            'illuminationTime': check_illumination(sensor_info.get('Luximetro')) if sensor_info.get('Luximetro') else '-',
             'hasWifi': has_wifi
         }
 

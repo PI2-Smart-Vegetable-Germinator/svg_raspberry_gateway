@@ -21,13 +21,25 @@
     });
     socket.on('infoUpdated', function (data) {
       let tempLabel = document.getElementById('temp-label');
-      tempLabel.textContent = data.currentTemperature + '°';
+      if (data.currentTemperature) {
+        tempLabel.textContent = data.currentTemperature + '°';
+      } else {
+        tempLabel.textContent = '-';
+      }
 
       let humidityLabel = document.getElementById('humidity');
-      humidityLabel.textContent = data.currentHumidity + '%';
+      if (data.currentHumidity) {
+        humidityLabel.textContent = data.currentHumidity + '%';
+      } else {
+        humidityLabel.textContent = '-';
+      }
 
       let illuminationLabel = document.getElementById('light-time');
-      illuminationLabel.textContent = data.illuminationTime;
+      if (data.illuminationTime) {
+        illuminationLabel.textContent = data.illuminationTime;
+      } else {
+        illuminationLabel.textContent = '-';
+      }
     });
     socket.on('irrigationFinished', function () {
       document.getElementById('irrigation-label').textContent = 'Irrigação concluída!';

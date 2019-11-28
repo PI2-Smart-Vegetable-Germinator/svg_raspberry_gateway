@@ -143,6 +143,21 @@ def app_activate_irrigation():
 
     return jsonify({'success': True}), 200
 
+@interface_blueprint.route('/api/toggle_smart_irrigation', methods=['POST'])
+def toggle_smart_irrigation():
+    post_data = request.get_json()
+
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+    
+    machine_info['smartIrrigationEnabled'] = post_data['smartIrrigationEnabled']
+
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
+        json.dump(machine_info, json_file)
+
+    return jsonify({'success': True}), 201
+
+
 
 # SECTION ILLUMINATION --------------------------------------------------
 

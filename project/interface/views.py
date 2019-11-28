@@ -96,7 +96,7 @@ def home():
             'currentTemperature': str(sensor_info.get('TemperaturaAr')),
             'currentHumidity': str(sensor_info.get('UmidadeSolo')),
             'currentAirHumidity': str(sensor_info.get('UmidadeAr')),
-            'illuminationTime': check_illumination(sensor_info.get('Luximetro'))
+            'illuminationTime': check_illumination(sensor_info.get('Luximetro')),
             'hasWifi': has_wifi
         }
 

@@ -45,7 +45,7 @@ def check_illumination(illumination):
     if not machine_info.get('illuminationTime'):
         machine_info['illuminationTime'] = 0
 
-    if illumination is not None and illumination > 2000 and machine_info.get('illuminated'):
+    if illumination is not None and float(illumination) > 2000 and machine_info.get('illuminated'):
         last_updated = machine_info.get('lastUpdated')
         if not last_updated:
             last_updated = str(datetime.now())
@@ -58,7 +58,7 @@ def check_illumination(illumination):
         
         with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
             json.dump(machine_info, json_file)
-    elif illumination is not None and illumination > 2000:
+    elif illumination is not None and float(illumination) > 2000:
         machine_info['illuminated'] = True
         with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
             json.dump(machine_info, json_file)

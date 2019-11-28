@@ -34,6 +34,12 @@ interface_blueprint = Blueprint("interface", __name__)
 def ping():
     return jsonify({'response': 'pong!'}), 200
 
+@interface_blueprint.route('/api/reset')
+def reset_data():
+    with open(os.path.dirname(__file__) + '/../../assets/machine_info.json', 'w') as json_file:
+        json.dump({}, json_file)
+    return jsonify({'success': True}), 200
+
 @interface_blueprint.route('/app/start')
 def start_system():
     return render_template('start_screen.html')

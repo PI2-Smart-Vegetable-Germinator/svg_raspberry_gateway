@@ -79,6 +79,8 @@ def update_info():
     post_data['illuminationTime'] = illumination_time
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
         machine_info = json.load(json_file)
+        if not machine_info.get('plantingId'):
+            return jsonify({'success': True, 'info': 'no planting active'}), 201
         post_data['plantingId'] = machine_info['plantingId']
         machine_info['lastUpdated'] = str(datetime.now())
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:

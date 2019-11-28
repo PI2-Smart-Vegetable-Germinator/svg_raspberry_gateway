@@ -73,6 +73,7 @@ def check_humidity(humidity):
 @app.route('/update_info', methods=['POST'])
 def update_info():
     post_data = request.get_json()
+    data = {}
     check_humidity(post_data.get('currentHumidity'))
     illumination_time = check_illumination(post_data.get('luxValue'))
     post_data['illuminationTime'] = illumination_time
@@ -83,7 +84,10 @@ def update_info():
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json', 'w') as json_file:
         json.dump(machine_info, json_file)
     socketio.emit('infoUpdated', post_data)
-    requests.post('%s/api/update_planting_info' % os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+
+    data = {'currentTemperature': post_data.get('currentTemperature'), 'currentHumidity': post_data.get('currentHumidity'), 'currentAirHumidity': post_data.get('currentAirHumidity'), 'illuminationTime': post_data.get('illuminationTime'), 'plantingId': post_data.get('plantingId')}
+    
+    requests.post('%s/api/update_planting_info' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
     return jsonify({'success': True}), 201
 
 

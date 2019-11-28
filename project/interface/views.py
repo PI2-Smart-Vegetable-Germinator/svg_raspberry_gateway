@@ -130,6 +130,13 @@ def activate_irrigation():
 
     return jsonify({'success': True}), 200
 
+@interface_blueprint.route('/api/app/start_irrigation')
+def app_activate_irrigation():
+    t = Thread(target=start_irrigation)
+    t.start()
+
+    return jsonify({'success': True}), 200
+
 
 # SECTION ILLUMINATION --------------------------------------------------
 

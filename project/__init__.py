@@ -87,7 +87,13 @@ def update_info():
         json.dump(machine_info, json_file)
     socketio.emit('infoUpdated', post_data)
 
-    data = {'currentTemperature': post_data.get('currentTemperature'), 'currentHumidity': post_data.get('currentHumidity'), 'currentAirHumidity': post_data.get('currentAirHumidity'), 'illuminationTime': post_data.get('illuminationTime'), 'plantingId': post_data.get('plantingId')}
+    data = {
+        'currentTemperature': int(float(post_data.get('currentTemperature'))),
+        'currentHumidity': int(float(post_data.get('currentHumidity'))),
+        'currentAirHumidity': int(float(post_data.get('currentAirHumidity'))),
+        'illuminationTime': post_data.get('illuminationTime'),
+        'plantingId': post_data.get('plantingId')
+    }
     
     requests.post('%s/api/update_planting_info' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data, timeout=8)
     return jsonify({'success': True}), 201

@@ -51,8 +51,8 @@ def check_illumination(illumination):
     if illumination is not None and float(illumination) > 2000 and machine_info.get('illuminated'):
         last_updated = machine_info.get('lastUpdated')
         if not last_updated:
-            last_updated = str(datetime.now())
-        delta = datetime.now() - datetime.strptime(last_updated, "%Y-%m-%d %H:%M:%S.%f")
+            machine_info['last_updated'] = str(datetime.now())
+        delta = datetime.now() - datetime.strptime(machine_info['last_updated'], "%Y-%m-%d %H:%M:%S.%f")
         
         if not machine_info.get('illuminationTime'):
             machine_info['illuminationTime'] = delta.seconds

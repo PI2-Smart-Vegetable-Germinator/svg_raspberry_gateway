@@ -38,6 +38,10 @@ from esp_commands.sensor_data import check_illumination
 from esp_commands.relays import start_irrigation
 
 def get_updated_info():
+    with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
+        machine_info = json.load(json_file)
+        if not machine_info.get('plantingId'):
+            return
     sensor_info = get_sensor_data()
     data = {
         'currentTemperature': sensor_info.get('TemperaturaAr'),

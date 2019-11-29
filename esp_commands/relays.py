@@ -36,7 +36,7 @@ def start_irrigation():
 
     try:
         response = requests.post('%s/api/start_irrigation' %
-                                 os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+                                 os.getenv('EXTERNAL_GATEWAY_URL'), json=data, timeout=5)
     except RequestException as e:
         print(str(e))
 
@@ -54,7 +54,7 @@ def start_irrigation():
 
     try:
         response = requests.post('%s/api/end_irrigation' %
-                                 os.getenv('EXTERNAL_GATEWAY_URL'), json={"plantingId" : machine_info.get('plantingId')})
+                                 os.getenv('EXTERNAL_GATEWAY_URL'), json={"plantingId" : machine_info.get('plantingId')}, timeout=5)
     except RequestException as e:
         print(str(e))
     

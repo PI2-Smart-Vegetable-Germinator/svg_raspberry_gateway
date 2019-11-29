@@ -54,7 +54,7 @@ def get_updated_info():
     # }
 
     print(data)
-    requests.post('http://localhost:5005/update_info', json=data)
+    requests.post('http://localhost:5005/update_info', json=data, timeout=8)
 
 def check_humidity(humidity):
     with open(os.path.dirname(__file__) + '/../assets/machine_info.json') as json_file:
@@ -89,12 +89,12 @@ def update_info():
 
     data = {'currentTemperature': post_data.get('currentTemperature'), 'currentHumidity': post_data.get('currentHumidity'), 'currentAirHumidity': post_data.get('currentAirHumidity'), 'illuminationTime': post_data.get('illuminationTime'), 'plantingId': post_data.get('plantingId')}
     
-    requests.post('%s/api/update_planting_info' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+    requests.post('%s/api/update_planting_info' % os.getenv('EXTERNAL_GATEWAY_URL'), json=data, timeout=8)
     return jsonify({'success': True}), 201
 
 
 cron = BackgroundScheduler()
-cron.add_job(get_updated_info, 'interval', seconds=15)
+cron.add_job(get_updated_info, 'interval', seconds=30)
 cron.start()
 
 if not os.path.exists('/etc/wpa_supplicant/wpa_supplicant.conf.backup'):

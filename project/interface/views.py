@@ -61,7 +61,7 @@ def pair_device():
             data['id'] = machine_info.get('id')
 
     response = requests.post('%s/api/machine' %
-                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+                             os.getenv('EXTERNAL_GATEWAY_URL'), json=data, timeout=8)
 
     print("\n\n=============")
     print(response.url)
@@ -178,7 +178,7 @@ def switch_illumination():
 
     try:
         response = requests.post('%s/api/switch_illumination' %
-                                os.getenv('EXTERNAL_GATEWAY_URL'), json=data)
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=data, timeout=8)
     except RequestException as e:
         print(str(e))
 
@@ -228,7 +228,7 @@ def confirm_planting():
 
     try:
         response = requests.post('%s/api/start_planting' %
-                                os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data, timeout=8)
 
         response_json = response.json()
         machine_info['plantingActive'] = True
@@ -262,7 +262,7 @@ def end_planting():
 
     try:
         response = requests.post('%s/api/end_planting' %
-                                os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data)
+                                os.getenv('EXTERNAL_GATEWAY_URL'), json=post_data, timeout=8)
         machine_info['plantingActive'] = False
         machine_info['plantingId'] = None
     except RequestException:

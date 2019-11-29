@@ -14,7 +14,10 @@ def get_sensor_data():
     except serial.SerialException as e:
         print("deu ruim")
         print(str(e))
-        return {}
+        try:
+            comunicacaoSerial = serial.Serial('/dev/ttyUSB1', 9600, timeout=3) #substituindo ttyACM0 pelo USB da ESP32
+        except serial.SerialException as e:
+            return {}
 
     comunicacaoSerial.write(b'sensores')
     

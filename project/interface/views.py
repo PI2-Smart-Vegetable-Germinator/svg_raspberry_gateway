@@ -222,9 +222,9 @@ def confirm_planting():
 
     sensor_info = get_sensor_data()
 
-    post_data['currentTemperature'] = sensor_info.get('TemperaturaAr')
-    post_data['currentHumidity'] = sensor_info.get('UmidadeSolo')
-    post_data['currentAirHumidity'] = sensor_info.get('UmidadeAr')
+    post_data['currentTemperature'] = int(float(sensor_info.get('TemperaturaAr')))
+    post_data['currentHumidity'] = int(float(sensor_info.get('UmidadeSolo')))
+    post_data['currentAirHumidity'] = int(float(sensor_info.get('UmidadeAr')))
 
     try:
         response = requests.post('%s/api/start_planting' %

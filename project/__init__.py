@@ -65,7 +65,7 @@ def check_humidity(humidity):
         machine_info = json.load(json_file)
     
     if(machine_info.get('smartIrrigationEnabled')):
-        if humidity < 70:
+        if int(float(humidity)) < 70:
             latest_irrigation = machine_info.get('latestIrrigation')
             delta = datetime.now() - datetime.strptime(latest_irrigation, "%Y-%m-%d %H:%M:%S.%f")
             # checks if the latest irrigation has more than 5 minutes

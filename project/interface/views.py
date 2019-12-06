@@ -99,6 +99,8 @@ def home():
 
         sensor_info = get_sensor_data()
 
+        print(sensor_info)
+
         try:
             if sensor_info.get('UmidadeSolo') and int(float(sensor_info.get('UmidadeSolo'))) > 150:
                 sensor_info['UmidadeSolo'] = '-'

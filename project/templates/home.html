@@ -21,14 +21,14 @@
     });
     socket.on('infoUpdated', function (data) {
       let tempLabel = document.getElementById('temp-label');
-      if (data.currentTemperature) {
+      if (data.currentTemperature && data.currentTemperature != "-999.00") {
         tempLabel.textContent = data.currentTemperature + '°';
       } else {
         tempLabel.textContent = '-';
       }
 
       let humidityLabel = document.getElementById('humidity');
-      if (data.currentHumidity) {
+      if (data.currentHumidity && data.currentTemperature != "-999.00") {
         humidityLabel.textContent = data.currentHumidity + '%';
       } else {
         humidityLabel.textContent = '-';

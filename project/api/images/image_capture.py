@@ -11,7 +11,7 @@ from flask import jsonify
 class ImageCapture:
     def trigger_image_capture(self):
         # Open a file to replace the previous picture
-        image_file = open(os.path.dirname(__file__) + '/../../project/api/images/assets/photo.jpg', 'wb')
+        image_file = open(os.path.dirname(__file__) + '/assets/photo.jpg', 'wb')
 
         # camera = PiCamera()
 
@@ -20,12 +20,12 @@ class ImageCapture:
         image_file.close()
         camera.close()
 
-        if os.path.exists(os.path.dirname(__file__) + '/../../project/api/images/assets/photo.jpg'):
+        if os.path.exists(os.path.dirname(__file__) + '/assets/photo.jpg'):
             return True
         return False
 
     def send_image(self, planting_id):
-        image_file = open(os.path.dirname(__file__) + '/../../project/api/images/assets/photo.jpg', 'rb')
+        image_file = open(os.path.dirname(__file__) + '/assets/photo.jpg', 'rb')
 
         data = {
             'file': image_file,
@@ -38,7 +38,7 @@ class ImageCapture:
         if(response.status_code != 200):
             return response
         
-        image_file = open(os.path.dirname(__file__) + '/../../project/api/images/assets/photo.jpg', 'rb')
+        image_file = open(os.path.dirname(__file__) + '/assets/photo.jpg', 'rb')
 
         data = {
             'file': image_file,

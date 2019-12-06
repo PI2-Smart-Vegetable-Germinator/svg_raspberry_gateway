@@ -105,7 +105,7 @@ def home():
             if sensor_info.get('UmidadeSolo') and int(float(sensor_info.get('UmidadeSolo'))) > 150:
                 sensor_info['UmidadeSolo'] = '-'
             
-            if sensor_info.get('TemperaturaAr') and sensor_info.get('TemperaturaAr') = "-999.00":
+            if sensor_info.get('TemperaturaAr') and sensor_info.get('TemperaturaAr') == "-999.00":
                 sensor_info['UmidadeSolo'] = '-'
                 sensor_info['UmidadeAr'] = '-'
                 sensor_info['TemperaturaAr'] = '-'

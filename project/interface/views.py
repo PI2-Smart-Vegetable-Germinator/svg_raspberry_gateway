@@ -98,6 +98,18 @@ def home():
             return render_template('planting.html', seedlings=seedlings_data['seedlings'], hasWifi=has_wifi)
 
         sensor_info = get_sensor_data()
+
+        try:
+            if sensor_info.get('UmidadeSolo') and int(float(sensor_info.get('UmidadeSolo'))) > 150:
+                sensor_info['UmidadeSolo'] = '-'
+            
+            if sensor_info.get('TemperaturaAr') and sensor_info.get('TemperaturaAr') = "-999.00":
+                sensor_info['UmidadeSolo'] = '-'
+                sensor_info['UmidadeAr'] = '-'
+                sensor_info['TemperaturaAr'] = '-'
+        except Exception as e:
+            pass
+        
         data = {
             'currentTemperature': str(sensor_info.get('TemperaturaAr')) if sensor_info.get('TemperaturaAr') else '-',
             'currentHumidity': str(sensor_info.get('UmidadeSolo')) if sensor_info.get('UmidadeSolo') else '-',
